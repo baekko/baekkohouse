@@ -22,7 +22,7 @@
       "type": "image/png"
     }
   ],
-  "scope": "/",
+  "scope": "/baekkohouse/",
   "related_applications": [],
   "prefer_related_applications": false
 }
