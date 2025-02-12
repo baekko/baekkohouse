@@ -100,6 +100,10 @@
             text-align: center;
     }
         .hintbutton {
+            position: fixed;
+            bottom: 150px; /* 기본 위치 */
+            left: 50%;
+            transform: translateX(-50%);
             padding: 8px 12px;
             font-size: 14px;
             font-weight: bold;
@@ -108,6 +112,7 @@
             background-color: white;
             border: none;
             border-radius: 5px;
+            z-index: 1000;    
     }        
         .close {
             float: right;
@@ -142,7 +147,7 @@
         .hintbutton {
             font-size: 14px;
             padding: 6px 10px;
-            bottom: 170px;
+            bottom: 160px;
         }
         #message {
             font-size: 20px; /* 메시지 글자 크기를 줄임 */
