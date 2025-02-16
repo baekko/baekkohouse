@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="manifest" href="/manifest.json">
-    <title>정답 입력</title>
+    <title>오프닝</title>
     <style>
         body {
             margin: 0;
@@ -26,13 +25,12 @@
             position: fixed; /* 버튼을 화면에 고정 */
             bottom: 20px; /* 화면 하단에 위치 */
             width: 100%;
-            transform: translate3d(0, 0, 0);
         }
         .next-button {
             padding: 10px 20px;
             font-size: 18px;
             cursor: pointer;
-            background-color: #007bff;
+            background-color: orange;
             color: white;
             border: none;
             border-radius: 5px;
@@ -42,7 +40,7 @@
             animation: showButton 0s ease-in 8s forwards;
         }
         .next-button:hover {
-            background-color: #0056b3;
+            background-color: orange;
         }
 
         @keyframes showButton {
@@ -74,9 +72,6 @@
         function goToNextPage() {
             window.location.href = "https://baekko.github.io/baekkohouse/secret2.html"; // 이동할 페이지 설정
         }
-        document.getElementById('bg-video').onended = function() {
-            this.pause(); // 동영상 재생이 끝나면 정지
-        };
     </script>
 </body>
 </html>
