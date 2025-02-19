@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>계란후라이 뒤집기 게임</title>
+    <style>
+        body {
+            text-align: center;
+            background-color: #f8f8f8;
+            font-family: 'Arial', sans-serif;
+        }
+        h1 {
+            color: #333;
+        }
+        canvas {
+            background-color: #ddd;
+            border-radius: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <h1>🍳 계란후라이 뒤집기 게임 🍳</h1>
+    <canvas id="gameCanvas" width="400" height="500"></canvas>
+    
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        
+        let egg = {
+            x: canvas.width / 2,
+            y: canvas.height - 100,
+            width: 80,
+            height: 40,
+            angle: 0,
+            velocityY: 0,
+            flipping: false
+        };
+        
+        let gravity = 0.5;
+        let lift = -10;
+        let flippingThreshold = 15;
+        
+        function drawEgg() {
+            ctx.save();
+            ctx.translate(egg.x, egg.y);
+            ctx.rotate(egg.angle);
+            ctx.drawImage(eggImage, -egg.width / 2, -egg.height / 2, egg.width, egg.height);
+            ctx.restore();
+        }
+        
+        function updateEgg() {
+            if (egg.flipping) {
+                egg.y += egg.velocityY;
+                egg.velocityY += gravity;
+                egg.angle += 0.1;
+                
+                if (egg.y >= canvas.height - 100) {
+                    egg.y = canvas.height - 100;
+                    egg.velocityY = 0;
+                    egg.flipping = false;
+                    egg.angle = 0;
+                }
+            }
+        }
+        
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawEgg();
+            updateEgg();
+            requestAnimationFrame(gameLoop);
+        }
+        
+        let eggImage = new Image();
+        eggImage.src = "egg.png"; // 이미지 파일을 프로젝트 폴더에 추가해야 함
+        eggImage.onload = () => {
+            gameLoop();
+        };
+        
+        window.addEventListener("devicemotion", (event) => {
+            let acceleration = event.accelerationIncludingGravity;
+            if (acceleration.y < -flippingThreshold && !egg.flipping) {
+                egg.velocityY = lift;
+                egg.flipping = true;
+            }
+        });
+    });
+    </script>
+</body>
+</html>
