@@ -176,24 +176,33 @@
             currentIndex = (currentIndex + 1) % images.length; // 마지막 이미지 이후 첫 번째로 순환
             document.getElementById("slider-image").src = images[currentIndex];
         }
+        let score = localStorage.getItem("score") ? parseInt(localStorage.getItem("score")) : 100;
+        
+        function updateScore(points) {
+            score += points;
+            localStorage.setItem("score", score);
+        }
         function useHint1() {
             document.getElementById('modalText').innerText = "힌트1: 입구에 도서관 이용안내를 찾아 봐.";
             document.getElementById('modal').style.display = "block";
             document.getElementById('hint1').disabled = true;
             document.getElementById('hint2').disabled = false;
+            updateScore(-1)
         }
         function useHint2() {
             document.getElementById('modalText').innerText = "힌트2: 해미도서관 전화번호: 041-688-XXXX.";
             document.getElementById('modal').style.display = "block";
             document.getElementById('hint2').disabled = true;
             document.getElementById('answerBtn').disabled = false;
+            updateScore(-3)
         }
         function showAnswerModal() {
             document.getElementById('modalText').innerText = "4756";
             document.getElementById('modal').style.display = "block";
+            updateScore(-5)
         }
-        function showScore() {
-            document.getElementById('modalText').innerText = "현재 점수: 100점";
+         function showScore() {
+            document.getElementById('modalText').innerText = "현재 점수: " + score + "점";
             document.getElementById('modal').style.display = "block";
         }
         function closeModal() {
