@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>방향키 정답 입력</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Courier, sans-serif;
+            margin: 0;
+           
+        }
+        .video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+        .circle-container {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            background: rgba(229, 245, 9, 0.9); /* 배경만 반투명 */ 
+            bottom: 50px;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 40px);
+            grid-template-rows: repeat(3, 40px);
+            grid-template-areas: 
+                ". up ."
+                "left confirm right"
+                ". down .";
+            gap: 10px;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            left: 50%; /* 중앙 정렬 */
+            bottom: 60px;
+            transform: translateX(-50%); /* 자신의 너비의 반만큼 왼쪽으로 이동 */
+        }
+        .direction-button, .confirm-button {
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            cursor: pointer;
+            border: 2px solid #246383;
+            background: #00A6ED;
+            color: white;
+            border-radius: 5px;
+            box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+            line-height: 1;
+            text-align: center;
+        }
+        .direction-button:hover, .confirm-button:hover  {
+            background: #00A6ED;
+            box-shadow: 4px 4px 7px rgba(0, 0, 0, 0.5);
+            transform: scale(1.1);
+        }
+        .direction-button:active, .confirm-button:active {
+            transform: scale(1.0);
+        }    
+        .direction-button.up { grid-area: up; }
+        .direction-button.left { grid-area: left; }
+        .direction-button.right { grid-area: right; }
+        .direction-button.down { grid-area: down; }
+        .confirm-button { grid-area: confirm; }
+
+        .button-container {
+            position: fixed;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+        }
+        button {
+            padding: 4px 6px;
+            font-size: 12px;
+            font-weight: bold;
+            width: 65px;
+            cursor: pointer;
+            color: white;
+            background-color: orange;
+            border: none;
+            border-radius: 5px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.466);
+        }
+        button:disabled {
+            background-color: rgb(109, 93, 93) !important;
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            padding: 15px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+        .modal-content {
+            text-align: center;
+    }    
+        .close {
+            float: right;
+            cursor: pointer;
+            font-size: 20px;
+            font-weight: bold;
+    }
+        /* 모바일 화면 크기에 맞게 수정 */
+       @media (max-width: 768px) {
+       .circle-container {
+            width: 160px;
+            height: 160px;
+            left: 50%;
+            transform: translatex(-50%);
+        }
+   
+       .button-container {
+            grid-template-columns: repeat(3, 40px); /* 버튼 크기를 줄임 */
+            grid-template-rows: repeat(3, 40px); /* 버튼 크기를 줄임 */
+            gap: 10px; /* 버튼 간격을 줄임 */
+            left: 50%;
+            transform: translatex(-50%);
+        }
+
+        .direction-button {
+            width: 40px; /* 버튼 크기 줄임 */
+            height: 40px; /* 버튼 크기 줄임 */
+            font-size: 30px; /* 글자 크기 줄임 */
+        }
+        .confirm-button {
+            font-size: 12px; /* 글자 크기 줄임 */
+        }
+    }
+    </style>
+</head>
+<body>
+    <video class="video-background" autoplay muted playsinline id="bg-video">
+        <source src="secret6.mp4" type="video/mp4">  <!-- 망고보드 동영상 URL 넣기 -->
+    </video>
+        <div class="circle-container"></div>
+        <div class="button-grid">
+            <button class="direction-button up" onclick="recordDirection('up')">⬆️</button>
+            <button class="direction-button left" onclick="recordDirection('left')">⬅️</button>
+            <button class="confirm-button" onclick="checkSequence()">입력</button>
+            <button class="direction-button right" onclick="recordDirection('right')">➡️</button>
+            <button class="direction-button down" onclick="recordDirection('down')">⬇️</button>
+        </div> 
+        <div class="button-container">
+            <button id="hint1" onclick="useHint1()">힌트 1</button>
+            <button id="hint2" onclick="useHint2()" disabled>힌트 2</button>
+            <button id="answerBtn" onclick="showAnswerModal()" disabled>정답 보기</button>
+            <button onclick="showScore()">점수 보기</button>
+        </div>
+        <div id="modal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <p id="modalText"></p>
+            </div>
+        </div>
+
+    <script>
+        const correctSequence = ['down', 'left', 'up', 'right', 'up', 'right', 'up'];
+        let userInput = [];
+
+        function recordDirection(direction) {
+            if (userInput.length < 7) {
+                userInput.push(direction);
+                console.log("입력된 방향:", userInput);
+            }
+        }
+        function checkSequence() {
+          console.log("사용자 입력:", userInput);
+          console.log("정답:", correctSequence);
+
+         // 배열을 하나씩 비교하는 방식으로 수정
+        let isCorrect = userInput.length === correctSequence.length &&
+                    userInput.every((val, index) => val === correctSequence[index]);
+
+        if (isCorrect) {
+          console.log("정답입니다! 다음 페이지로 이동");
+          window.location.href = "https://baekko.github.io/baekkohouse/catmom10.html";
+        } else {
+          console.log("오답! 모달 표시");
+          document.getElementById('modalText').innerText = "그 길이 아니야";
+          document.getElementById('modal').style.display = "block";
+          userInput = []; // 오답 시 입력값 초기화
+        }
+    }
+        let score = localStorage.getItem("score") ? parseInt(localStorage.getItem("score")) : 100;
+        
+        function updateScore(points) {
+            score += points;
+            localStorage.setItem("score", score);
+        }
+        function useHint1() {
+            document.getElementById('modalText').innerText = "도서관 내에 지도를 찾아!";
+            document.getElementById('modal').style.display = "block";
+            document.getElementById('hint1').disabled = true;
+            document.getElementById('hint2').disabled = false;
+            updateScore(-1);
+        }
+        function useHint2() {
+            document.getElementById('modalText').innerText = "지도에서 해미도서관을 찾았으면 제일 먼저 아래방향으로 가야한다는건 알겠지? ";
+            document.getElementById('modal').style.display = "block";
+            document.getElementById('hint2').disabled = true;
+            document.getElementById('answerBtn').disabled = false;
+            updateScore(-2);
+        }
+        function showAnswerModal() {
+            document.getElementById('modalText').innerText = "아래쪽, 왼쪽, 위쪽, 오른쪽, 위쪽, 오른쪽, 위쪽";
+            document.getElementById('modal').style.display = "block";
+            updateScore(-2);
+        }
+        function showScore() {
+            document.getElementById('modalText').innerText = "현재 점수: " + score + "점";
+            document.getElementById('modal').style.display = "block";
+        }
+        function closeModal() {
+            document.getElementById('modal').style.display = "none";
+        }
+        
+        document.getElementById('bg-video').onended = function() {
+            this.pause(); // 동영상 재생이 끝나면 정지
+        };
+    </script>
+</body>
+</html>
