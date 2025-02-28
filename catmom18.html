@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>음식 순서 맞추기</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: Courier, sans-serif;
+        }
+        .video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            position: fixed;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            flex-wrap: nowrap; /* 버튼 한 줄로 배치 */
+        }
+        .food-container  {
+            display: flex;
+            gap: 10px;
+            cursor: pointer;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            left: 50%; /* 중앙 정렬 */
+            bottom: 60px;
+            transform: translateX(-50%); /* 자신의 너비의 반만큼 왼쪽으로 이동 */
+        }
+        .food-button, .submit-button {
+            width: 40px;
+            height: 40px;
+            border: none;
+            background-size: cover;
+            background-position: center;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s ease-in-out;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+        }
+        .food-button:hover {
+            transform: scale(1.1);
+        }
+        .food-button:active {
+            transform: scale(1.2);
+            box-shadow: 0px 0px 10px rgba(255, 165, 0, 0.8);
+        }
+
+        .submit-button {
+            background-color: orange
+        }
+
+        .submit-button:hover {
+            background-color: orange;
+        }
+        button {
+            padding: 4px 6px;
+            width: 65px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            color: white;
+            background-color: orange;
+            border: none;
+            border-radius: 5px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.466);
+        }
+        button:disabled {
+            background-color: rgb(109, 93, 93) !important;
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            padding: 15px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+    
+        .modal-content {
+            text-align: center;
+        }
+        .close {
+            float: right;
+            cursor: pointer;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        @media (max-width: 768px) {
+            .food-button {
+                width: 40px;
+                height: 40px;
+            }
+           
+    </style>
+</head>
+<body> 
+    <div class="food-container">
+            <button class="food-button" style="background-image: url('salmon.png');" onclick="recordSelection('연어')"></button>
+            <button class="food-button" style="background-image: url('tuna.png');" onclick="recordSelection('참치')"></button>
+            <button class="food-button" style="background-image: url('shrimp.png');" onclick="recordSelection('새우')"></button>
+            <button class="food-button" style="background-image: url('clam.png');" onclick="recordSelection('조개')"></button>
+            <button class="food-button" style="background-image: url('cod.png');" onclick="recordSelection('고등어')"></button>
+            <button class="food-button" style="background-image: url('chicken.png');" onclick="recordSelection('닭고기')"></button>
+            <button class="submit-button" onclick="checkSequence()">입력</button>
+    </div>
+  
+    <div class="button-container">
+        <button id="hint1" onclick="useHint1()">힌트 1</button>
+        <button id="hint2" onclick="useHint2()" disabled>힌트 2</button>
+        <button id="answerBtn" onclick="showAnswerModal()" disabled>정답 보기</button>
+        <button onclick="showScore()">점수 보기</button>
+    </div>
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <p id="modalText"></p>
+        </div>
+    </div>
+
+    <script>
+        const correctSequence = ['연어', '닭고기', '고등어', '참치', '조개', '새우'];
+        let userInput = [];
+
+        function recordSelection(food) {
+            if (userInput.length < 6) {
+                userInput.push(food);
+            }
+        }
+        function selectFood(button, food) {
+            selectedFood = food;
+            event.stopPropagation();
+            let button = event.currentTarget;
+            document.querySelectorAll('.food-button').forEach(btn => {
+                btn.style.transform = "scale(1.0)";
+                btn.style.boxShadow = "none";
+            });
+            button.style.transform = "scale(1.2)";
+            button.style.boxShadow = "0px 0px 10px rgba(255, 165, 0, 0.8)";
+        }
+
+        let score = localStorage.getItem("score") ? parseInt(localStorage.getItem("score")) : 100;
+        
+        function updateScore(points) {
+            score += points;
+            localStorage.setItem("score", score);
+        }
+        function useHint1() {
+            document.getElementById('modalText').innerText = "통합데스크에 가면 실마리가 풀릴거야";
+            document.getElementById('modal').style.display = "block";
+            document.getElementById('hint1').disabled = true;
+            document.getElementById('hint2').disabled = false;
+            updateScore(-1);
+        }
+        function useHint2() {
+            document.getElementById('modalText').innerText = "실로폰 음계마다 색이달라";
+            document.getElementById('modal').style.display = "block";
+            document.getElementById('hint2').disabled = true;
+            document.getElementById('answerBtn').disabled = false;
+            updateScore(-2);
+        }
+        function showAnswerModal() {
+            document.getElementById('modalText').innerText = "나비야";
+            document.getElementById('modal').style.display = "block";
+            updateScore(-2);
+        }
+        function showScore() {
+            document.getElementById('modalText').innerText = "현재 점수: " + score + "점";
+            document.getElementById('modal').style.display = "block";
+        }
+        function closeModal() {
+            document.getElementById('modal').style.display = "none";
+        }
+        function checkAnswer() {
+            var answer = document.getElementById('answer').value;
+            var correctAnswer = "나비야";
+            if (answer === correctAnswer) {
+                window.location.href = "https://baekko.github.io/baekkohouse/catmom15.html";
+            } else {
+                document.getElementById('modalText').innerText = "이 노래 모른다고?";
+                document.getElementById('modal').style.display = "block";
+            }
+        }
+        document.getElementById('bg-video').onended = function() {
+            this.pause(); // 동영상 재생이 끝나면 정지
+        };   
+    </script>
+</body>
+</html>
+
+      
