@@ -167,7 +167,7 @@
         </div>
 
     <script>
-        const correctSequence = ['down', 'left', 'up', 'right', 'up', 'right', 'up'];
+        const correctSequence = ['up', 'right', 'right', 'down', 'right', 'down', 'left'];
         let userInput = [];
 
         function recordDirection(direction) {
@@ -222,7 +222,7 @@
             }
         }
         function showAnswerModal() {
-            document.getElementById('modalText').innerText = "아래쪽, 왼쪽, 위쪽, 오른쪽, 위쪽, 오른쪽, 위쪽";
+            document.getElementById('modalText').innerText = "위쪽, 오른쪽, 오른쪽, 아래쪽, 오른쪽, 아래쪽, 왼쪽";
             document.getElementById('modal').style.display = "block";
             if (!answerUsed) {
                 updateScore(-1);
