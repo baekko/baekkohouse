@@ -52,7 +52,7 @@
         .direction-button, .confirm-button {
             width: 40px;
             height: 40px;
-            font-size: 20px;
+            font-size: 40px;
             cursor: pointer;
             border: 2px solid #246383;
             background: #00A6ED;
@@ -148,7 +148,7 @@
         .direction-button {
             width: 40px; /* 버튼 크기 줄임 */
             height: 40px; /* 버튼 크기 줄임 */
-            font-size: 30px; /* 글자 크기 줄임 */
+            font-size: 40px; /* 글자 크기 줄임 */
         }
         .confirm-button {
             font-size: 12px; /* 글자 크기 줄임 */
@@ -162,11 +162,11 @@
     </video>
         <div class="circle-container"></div>
         <div class="button-grid">
-            <button class="direction-button up" onclick="recordDirection('up')">⬆️</button>
-            <button class="direction-button left" onclick="recordDirection('left')">⬅️</button>
+            <button class="direction-button up" onclick="recordDirection('up')">🔼</button>
+            <button class="direction-button left" onclick="recordDirection('left')">◀️</button>
             <button class="confirm-button" onclick="checkSequence()">입력</button>
-            <button class="direction-button right" onclick="recordDirection('right')">➡️</button>
-            <button class="direction-button down" onclick="recordDirection('down')">⬇️</button>
+            <button class="direction-button right" onclick="recordDirection('right')">▶️</button>
+            <button class="direction-button down" onclick="recordDirection('down')">🔽</button>
         </div> 
         <div class="button-container">
             <button id="hint1" onclick="useHint1()">힌트 1</button>
