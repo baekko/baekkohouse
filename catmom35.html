@@ -20,28 +20,15 @@
             object-fit: cover;
             z-index: -1;
         }
-        .circle-container {
-            width: 160px;
-            height: 160px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: absolute;
-            background: rgba(229, 245, 9, 0.9); /* 배경만 반투명 */ 
-            bottom: 50px;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
         .button-grid {
             display: grid;
-            grid-template-columns: repeat(3, 40px);
-            grid-template-rows: repeat(3, 40px);
+            grid-template-columns: repeat(3, 35px);
+            grid-template-rows: repeat(3, 35px);
             grid-template-areas: 
                 ". up ."
                 "left confirm right"
                 ". down .";
-            gap: 10px;
+            gap: 15px;
             justify-content: center;
             align-items: center;
             position: absolute;
@@ -50,11 +37,10 @@
             transform: translateX(-50%); /* 자신의 너비의 반만큼 왼쪽으로 이동 */
         }
         .direction-button, .confirm-button {
-            width: 40px;
-            height: 40px;
-            font-size: 20px;
+            width: 35px;
+            height: 35px;
+            font-size: 35px;
             cursor: pointer;
-            border: 2px solid #246383;
             background: #00A6ED;
             color: white;
             border-radius: 5px;
@@ -138,17 +124,17 @@
         }
    
        .button-container {
-            grid-template-columns: repeat(3, 40px); /* 버튼 크기를 줄임 */
-            grid-template-rows: repeat(3, 40px); /* 버튼 크기를 줄임 */
+            grid-template-columns: repeat(3, 35px); /* 버튼 크기를 줄임 */
+            grid-template-rows: repeat(3, 35px); /* 버튼 크기를 줄임 */
             gap: 10px; /* 버튼 간격을 줄임 */
             left: 50%;
             transform: translatex(-50%);
         }
 
         .direction-button {
-            width: 40px; /* 버튼 크기 줄임 */
-            height: 40px; /* 버튼 크기 줄임 */
-            font-size: 30px; /* 글자 크기 줄임 */
+            width: 35px; /* 버튼 크기 줄임 */
+            height: 35px; /* 버튼 크기 줄임 */
+            font-size: 35px; /* 글자 크기 줄임 */
         }
         .confirm-button {
             font-size: 12px; /* 글자 크기 줄임 */
@@ -160,13 +146,12 @@
     <video class="video-background" autoplay muted playsinline id="bg-video">
         <source src="catmom35.mp4" type="video/mp4">  <!-- 망고보드 동영상 URL 넣기 -->
     </video>
-        <div class="circle-container"></div>
-        <div class="button-grid">
-            <button class="direction-button up" onclick="recordDirection('up')">⬆️</button>
-            <button class="direction-button left" onclick="recordDirection('left')">⬅️</button>
+       <div class="button-grid">
+            <button class="direction-button up" onclick="recordDirection('up')">🔼</button>
+            <button class="direction-button left" onclick="recordDirection('left')">◀️</button>
             <button class="confirm-button" onclick="checkSequence()">입력</button>
-            <button class="direction-button right" onclick="recordDirection('right')">➡️</button>
-            <button class="direction-button down" onclick="recordDirection('down')">⬇️</button>
+            <button class="direction-button right" onclick="recordDirection('right')">▶️</button>
+            <button class="direction-button down" onclick="recordDirection('down')">🔽</button>
         </div> 
         <div class="button-container">
             <button id="hint1" onclick="useHint1()">힌트 1</button>
