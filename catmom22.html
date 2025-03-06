@@ -26,15 +26,22 @@
             margin-top: 50px;
         }
         .arrow-button {
-            background-color: #00A6ED;
-            width: 40px;
-            border: none;
-            font-size: 25px;
+            background: #00A6ED;
+            width: 35px;
+            height: 35px;
+            font-size: 35px;
             cursor: pointer;
-            padding: 0px;
             position: fixed;
             bottom: 200px;
             left: 10%; 
+            border-radius: 5px;
+            box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            text-align: center;
         }
         .image-container img {
             width: 130px;
@@ -149,7 +156,7 @@
         <div class="image-container">
             <img id="slider-image" src="star1.png" alt="슬라이드 이미지">
         </div>
-        <button class="arrow-button" onclick="nextImage()">➡️</button>
+        <button class="arrow-button" onclick="nextImage()">▶️</button>
     </div>
     
     <div class="container">
