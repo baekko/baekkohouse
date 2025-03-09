@@ -68,7 +68,7 @@
         <button class="next-button" id="nextButton" onclick="goToNextPage()">다음</button>
     </div>
     <script>
-        let backgrounds = ["lexy1.png", "lexy2.png", "lexy3.png", "lexy4.png", "lexy5.png"];
+        let backgrounds = ["lexy1.png", "lexy2.png", "lexy1.png", "lexy3.png", "lexy4.png", "lexy5.png"];
         let currentIndex = 0;
         let lastUpdate = Date.now();
         let threshold = 50; // 기본 흔들기 감지 임계값
@@ -84,17 +84,17 @@
                 lastUpdate = Date.now();
                 shakeCount++;
                 
-                if (currentIndex < 3) {
+                if (currentIndex < 4) {
                     if (shakeCount >= requiredShakes) {
                         shakeCount = 0;
                         nextBackgroundCycle();
                     }
-                } else if (currentIndex === 3) {
+                } else if (currentIndex === 4) {
                     if (shakeCount >= requiredShakes * 2) { // 더 강한 흔들림 요구
                         shakeCount = 0;
                         nextBackground();
                     }
-                } else if (currentIndex === 4) {
+                } else if (currentIndex === 5) {
                     if (shakeCount >= requiredShakes * 3) { // 마지막 배경으로 넘어가기 전 더욱 강한 흔들림 요구
                         shakeCount = 0;
                         nextBackground();
@@ -105,11 +105,11 @@
         
         function nextBackgroundCycle() {
             cycleCount++;
-            currentIndex = (currentIndex + 1) % 3;
+            currentIndex = (currentIndex + 1) % 4;
             document.body.style.backgroundImage = `url('${backgrounds[currentIndex]}')`;
             
-            if (cycleCount >= 12) { // 1,2,3을 4번 반복한 후 4로 넘어감
-                currentIndex = 3;
+            if (cycleCount >= 16) { // 1,2,3을 3번 반복한 후 4로 넘어감
+                currentIndex = 4;
                 document.body.style.backgroundImage = `url('${backgrounds[currentIndex]}')`;
             }
         }
@@ -119,13 +119,16 @@
                 currentIndex++;
                 document.body.style.backgroundImage = `url('${backgrounds[currentIndex]}')`;
 
-            if (currentIndex === backgrounds.length - 1) { // 5번째 배경에 도달했을 때
-                setTimeout(() => {
-                    let button = document.getElementById("nextButton");
-                    button.style.display = "visible";
-                    button.style.opacity = "1"; // 부드럽게 나타나도록 설정
-                }, 3000); // 3초 후 버튼 표시
-            }
+        function finalBackground() {
+            currentIndex++;
+            document.body.style.backgroundImage = `url('${backgrounds[currentIndex]}')`;
+            
+            setTimeout(() => {
+                let button = document.getElementById("nextButton");
+                button.style.visibility = "visible";
+                button.style.opacity = "1";
+            }, 3000); // 3초 후 버튼 표시
+        }
         }
     }
         function nextPage() {
@@ -134,4 +137,5 @@
     </script>
 </body>
 </html>
+
 
