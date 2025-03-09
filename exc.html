@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>고양이 낚시대 게임</title>
+    <style>
+        body { text-align: center; font-family: Arial, sans-serif; }
+        img { width: 80%; max-width: 400px; margin-top: 20px; }
+        #message { font-size: 1.5em; margin-top: 20px; color: green; display: none; }
+    </style>
+</head>
+<body>
+    <h1>고양이 낚시대 게임</h1>
+    <p>휴대폰을 흔들어서 고양이를 유혹하세요!</p>
+    <img id="catImage" src="a.png" alt="고양이 장난감">
+    <p id="message">미션 완료! 고양이가 장난감을 물었어요!</p>
+    
+    <script>
+        let images = ["a.png", "b.png", "c.png", "d.png", "e.png"];
+        let currentIndex = 0;
+        let lastUpdate = Date.now();
+        let threshold = 15; // 흔들기 감지 임계값
+        
+        window.addEventListener("devicemotion", (event) => {
+            let acceleration = event.accelerationIncludingGravity;
+            let change = Math.abs(acceleration.x) + Math.abs(acceleration.y) + Math.abs(acceleration.z);
+            
+            if (change > threshold && Date.now() - lastUpdate > 500) { // 0.5초 간격으로 체크
+                lastUpdate = Date.now();
+                nextImage();
+            }
+        });
+        
+        function nextImage() {
+            if (currentIndex < images.length - 1) {
+                currentIndex++;
+                document.getElementById("catImage").src = images[currentIndex];
+            }
+            if (currentIndex === images.length - 1) {
+                document.getElementById("message").style.display = "block";
+            }
+        }
+    </script>
+</body>
+</html>
