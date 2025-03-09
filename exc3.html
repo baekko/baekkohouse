@@ -39,6 +39,7 @@
             border: none;
             border-radius: 5px;
             transition: background-color 0.3s;
+            display: none;
             opacity: 0;
             visibility: hidden;
             box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
@@ -114,24 +115,29 @@
             }
         }
 
+        function finalBackground() {
+            currentIndex = backgrounds.length - 1; // 마지막 배경으로 확실히 설정
+            document.body.style.backgroundImage = `url('${backgrounds[currentIndex]}')`;
+    
+        setTimeout(() => {
+            let button = document.getElementById("nextButton");
+            button.style.display = "block"; // 버튼을 보이도록 설정
+            button.style.visibility = "visible";
+            button.style.opacity = "1";
+        }, 3000); // 3초 후 버튼 표시
+}
+
         function nextBackground() {
             if (currentIndex < backgrounds.length - 1) {
                 currentIndex++;
                 document.body.style.backgroundImage = `url('${backgrounds[currentIndex]}')`;
-
-        function finalBackground() {
-            currentIndex = 5; 
-            document.body.style.backgroundImage = `url('${backgrounds[currentIndex]}')`;
-            
-            setTimeout(() => {
-                let button = document.getElementById("nextButton");
-                button.style.display = "block";
-                button.style.visibility = "visible";
-                button.style.opacity = "1";
-            }, 3000); // 3초 후 버튼 표시
-        }
+        
+            if (currentIndex === backgrounds.length - 1) {
+                finalBackground(); // 마지막 배경에 도달하면 버튼 표시
+            }
         }
     }
+
         function nextPage() {
             window.location.href = "https://baekko.github.io/baekkohouse/catmom2.html"; // 다음 페이지로 이동
         }
