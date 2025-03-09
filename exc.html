@@ -20,9 +20,9 @@
         let images = ["a.png", "b.png", "c.png", "d.png", "e.png"];
         let currentIndex = 0;
         let lastUpdate = Date.now();
-        let threshold = 25; // 흔들기 감지 임계값 증가
+        let threshold = 50; // 흔들기 감지 임계값 증가
         let shakeCount = 0; // 누적 흔들림 카운트
-        let requiredShakes = 5; // 단계별로 필요한 흔들림 횟수
+        let requiredShakes = 7; // 단계별로 필요한 흔들림 횟수
 
         window.addEventListener("devicemotion", (event) => {
             let acceleration = event.accelerationIncludingGravity;
