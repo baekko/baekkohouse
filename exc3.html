@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>고양이 낚시대 게임</title>
+    <style>
+        body { 
+            text-align: center; 
+            font-family: Arial, sans-serif; 
+            overflow: hidden; 
+            background-image: url('lexy1.png'); 
+            background-size: cover; /* 배경을 꽉 채움 */
+            background-repeat: no-repeat; /* 배경 반복 방지 */
+            background-position: center center; /* 중앙 정렬 */
+            height: 100vh; /* 화면 높이에 맞게 설정 */
+    width: 100vw; /* 화면 너비에 맞게 설정 */
+    margin: 0; /* 여백 제거 */
+    padding: 0;
+            transition: background 0.5s ease-in-out;
+        }
+        .button-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: fixed; /* 버튼을 화면에 고정 */
+            bottom: 20px; /* 화면 하단에 위치 */
+            width: 100%;
+            transform: translate3d(0, 0, 0);
+        }
+        .next-button {
+            padding: 4px 6px;
+            font-size: 12px;
+            font-weight: bold;
+            width: 65px;
+            cursor: pointer;
+            background-color: rgba(0, 0, 0, 0.5); /* 배경만 반투명 */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            opacity: 0;
+            visibility: hidden;
+            animation: showButton 0s ease-in 20s forwards;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+        }
+        .next-button:hover {
+            background-color: black;
+        }
+
+        @keyframes showButton {
+            to {
+                opacity: 1;
+                visibility: visible;
+            }
+        }
+
+        /* 모바일에서 버튼 크기와 위치 조정 */
+        @media (max-width: 768px) {
+            .next-button {
+                font-size: 12px;
+                padding: 4px 6px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="button-container">   
+        <button class="next-button" id="nextButton" onclick="goToNextPage()">다음</button>
+    </div>
+    <script>
+        let backgrounds = ["lexy1.png", "lexy2.png", "lexy3.png", "lexy4.png", "lexy5.png"];
+        let currentIndex = 0;
+        let lastUpdate = Date.now();
+        let threshold = 25; // 기본 흔들기 감지 임계값
+        let shakeCount = 0; // 누적 흔들림 카운트
+        let requiredShakes = 5; // 단계별로 필요한 흔들림 횟수
+        let cycleCount = 0; // 배경 1,2,3 순환 횟수
+
+        window.addEventListener("devicemotion", (event) => {
+            let acceleration = event.accelerationIncludingGravity;
+            let change = Math.abs(acceleration.x) + Math.abs(acceleration.y) + Math.abs(acceleration.z);
+            
+            if (change > threshold && Date.now() - lastUpdate > 300) { // 감지 간격을 0.3초로 조정
+                lastUpdate = Date.now();
+                shakeCount++;
+                
+                if (currentIndex < 3) {
+                    if (shakeCount >= requiredShakes) {
+                        shakeCount = 0;
+                        nextBackgroundCycle();
+                    }
+                } else if (currentIndex === 3) {
+                    if (shakeCount >= requiredShakes * 2) { // 더 강한 흔들림 요구
+                        shakeCount = 0;
+                        nextBackground();
+                    }
+                } else if (currentIndex === 4) {
+                    if (shakeCount >= requiredShakes * 3) { // 마지막 배경으로 넘어가기 전 더욱 강한 흔들림 요구
+                        shakeCount = 0;
+                        nextBackground();
+                    }
+                }
+            }
+        });
+        
+        function nextBackgroundCycle() {
+            cycleCount++;
+            currentIndex = (currentIndex + 1) % 3;
+            document.body.style.backgroundImage = `url('${backgrounds[currentIndex]}')`;
+            
+            if (cycleCount >= 9) { // 1,2,3을 3번 반복한 후 4로 넘어감
+                currentIndex = 3;
+                document.body.style.backgroundImage = `url('${backgrounds[currentIndex]}')`;
+            }
+        }
+
+        function nextBackground() {
+            if (currentIndex < backgrounds.length - 1) {
+                currentIndex++;
+                document.body.style.backgroundImage = `url('${backgrounds[currentIndex]}')`;
+                
+                if (currentIndex === backgrounds.length - 1) {
+                    setTimeout(() => {
+                        document.getElementById("nextButton").style.display = "block";
+                    }, 3000); // 3초 후 메시지와 버튼 표시
+                }
+            }
+        }
+
+        function nextPage() {
+            window.location.href = "nextpage.html"; // 다음 페이지로 이동
+        }
+    </script>
+</body>
+</html>
+
