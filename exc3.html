@@ -14,10 +14,10 @@
             background-repeat: no-repeat; /* 배경 반복 방지 */
             background-position: center center; /* 중앙 정렬 */
             height: 100vh; /* 화면 높이에 맞게 설정 */
-    width: 100vw; /* 화면 너비에 맞게 설정 */
-    margin: 0; /* 여백 제거 */
-    padding: 0;
-            transition: background 0.5s ease-in-out;
+            width: 100vw; /* 화면 너비에 맞게 설정 */
+            margin: 0; /* 여백 제거 */
+            padding: 0;
+            transition: background 0.1s ease-in-out;
         }
         .button-container {
             display: flex;
@@ -81,7 +81,7 @@
             let acceleration = event.accelerationIncludingGravity;
             let change = Math.abs(acceleration.x) + Math.abs(acceleration.y) + Math.abs(acceleration.z);
             
-            if (change > threshold && Date.now() - lastUpdate > 300) { // 감지 간격을 0.3초로 조정
+            if (change > threshold && Date.now() - lastUpdate > 100) { // 감지 간격을 0.1초로 조정
                 lastUpdate = Date.now();
                 shakeCount++;
                 
