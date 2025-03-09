@@ -5,14 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>고양이 낚시대 게임</title>
     <style>
-        body { text-align: center; font-family: Arial, sans-serif; }
-        img { width: 80%; max-width: 400px; margin-top: 20px; }
-        #message { font-size: 1.5em; margin-top: 20px; color: green; display: none; }
+        body { text-align: center; font-family: Arial, sans-serif; overflow: hidden; }
+        img { width: 70%; max-width: 300px; margin-top: 10px; }
+        #message { font-size: 1.5em; margin-top: 10px; color: green; display: none; }
     </style>
 </head>
 <body>
-    <h1>고양이 낚시대 게임</h1>
-    <p>휴대폰을 흔들어서 고양이를 유혹하세요!</p>
+    <h1 style="font-size: 1.2em;">고양이 낚시대 게임</h1>
+    <p style="font-size: 1em;">휴대폰을 흔들어서 고양이를 유혹하세요!</p>
     <img id="catImage" src="a.png" alt="고양이 장난감">
     <p id="message">미션 완료! 고양이가 장난감을 물었어요!</p>
     
@@ -20,15 +20,22 @@
         let images = ["a.png", "b.png", "c.png", "d.png", "e.png"];
         let currentIndex = 0;
         let lastUpdate = Date.now();
-        let threshold = 15; // 흔들기 감지 임계값
-        
+        let threshold = 25; // 흔들기 감지 임계값 증가
+        let shakeCount = 0; // 누적 흔들림 카운트
+        let requiredShakes = 5; // 단계별로 필요한 흔들림 횟수
+
         window.addEventListener("devicemotion", (event) => {
             let acceleration = event.accelerationIncludingGravity;
             let change = Math.abs(acceleration.x) + Math.abs(acceleration.y) + Math.abs(acceleration.z);
             
-            if (change > threshold && Date.now() - lastUpdate > 500) { // 0.5초 간격으로 체크
+            if (change > threshold && Date.now() - lastUpdate > 300) { // 감지 간격을 0.3초로 조정
                 lastUpdate = Date.now();
-                nextImage();
+                shakeCount++;
+                
+                if (shakeCount >= requiredShakes) {
+                    shakeCount = 0;
+                    nextImage();
+                }
             }
         });
         
@@ -44,3 +51,4 @@
     </script>
 </body>
 </html>
+
