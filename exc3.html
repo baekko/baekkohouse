@@ -120,11 +120,12 @@
                 document.body.style.backgroundImage = `url('${backgrounds[currentIndex]}')`;
 
         function finalBackground() {
-            currentIndex++;
+            currentIndex = 5; 
             document.body.style.backgroundImage = `url('${backgrounds[currentIndex]}')`;
             
             setTimeout(() => {
                 let button = document.getElementById("nextButton");
+                button.style.display = "block";
                 button.style.visibility = "visible";
                 button.style.opacity = "1";
             }, 3000); // 3초 후 버튼 표시
