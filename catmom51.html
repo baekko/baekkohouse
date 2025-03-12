@@ -109,21 +109,19 @@
 
             // 등급 계산
             let rank;
-            if (finalScore >= 98) {
+            if (finalScore >= 95) {
                 rank = "S";
-            } else if (finalScore >= 90) {
+            } else if (finalScore >= 85) {
                 rank = "A";
-            } else if (finalScore >= 80) {
+            } else if (finalScore >= 50) {
                 rank = "B";
-            } else if (finalScore >= 70) {
-                rank = "C";
             } else {
-                rank = "F";
+                rank = "c";
             }
 
             // 결과 표시
            document.getElementById("scoreDetails").innerHTML =
-                `힌트 및 정답보기 총 <b>${usedCount}회</b> 사용으로 <b>${usedCount}점</b> 차감되어 <b>${finalScore}점</b>으로 <b>${rank}등급</b>을 랭크되었습니다.`;
+                `<b>${playerName}</b>님은 힌트 및 정답보기 총 <b>${usedCount}회</b> 사용으로 <b>${usedCount}점</b> 차감되어 <b>${finalScore}점</b>으로 <b>${rank}등급</b>을 랭크되었습니다.`;
             setTimeout(() => {
             document.getElementById('scoreContainer').style.opacity = "1";
             document.getElementById('scoreContainer').style.visibility = "visible";
