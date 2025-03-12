@@ -97,19 +97,33 @@
             this.pause(); // 동영상 재생이 끝나면 정지
         };
         window.onload = function() {
-            const name = localStorage.getItem('playerName') || '플레이어';
-            const hint1Count = Number(localStorage.getItem('hint1Count')) || 0;
-            const hint2Count = Number(localStorage.getItem('hint2Count')) || 0;
-            const answerCount = Number(localStorage.getItem('answerCount')) || 0;
-            const totalPenalty = hint1Count + hint2Count + answerCount;
-            const finalScore = Number(localStorage.getItem('finalScore')) || 100;
-            
-            let grade = 'C';
-            if (finalScore >= 95) grade = 'S';
-            else if (finalScore >= 90) grade = 'A';
-            else if (finalScore >= 80) grade = 'B';
-            document.getElementById('scoreDetails').innerHTML = 
-                `${name}님은 게임을 진행하는 동안<br>힌트와 정답보기 총 ${totalPenalty}회를 사용하여<br> ${finalScore}점으로 ${grade}등급을 획득하였습니다.`;
+            // 42페이지에서 저장된 점수 가져오기
+            let finalScore = Number(localStorage.getItem("score"));
+
+            if (isNaN(finalScore)) {
+                finalScore = 100; // 기본값
+            }
+
+            // 사용 횟수 계산 (100점에서 몇 점 깎였는지 확인)
+            let usedCount = 100 - finalScore;
+
+            // 등급 계산
+            let rank;
+            if (finalScore >= 98) {
+                rank = "S";
+            } else if (finalScore >= 90) {
+                rank = "A";
+            } else if (finalScore >= 80) {
+                rank = "B";
+            } else if (finalScore >= 70) {
+                rank = "C";
+            } else {
+                rank = "F";
+            }
+
+            // 결과 표시
+            document.getElementById("resultText").innerHTML =
+                `힌트 및 정답보기 총 <b>${usedCount}회</b> 사용으로 <b>${usedCount}점</b> 차감되어 <b>${finalScore}점</b>으로 <b>${rank}등급</b>을 랭크되었습니다.`;
             setTimeout(() => {
             document.getElementById('scoreContainer').style.opacity = "1";
             document.getElementById('scoreContainer').style.visibility = "visible";
