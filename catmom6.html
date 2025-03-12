@@ -19,41 +19,6 @@
             object-fit: cover;
             z-index: -1;
         }
-        .slider-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-top: 50px;
-        }
-        .arrow-button {
-            background: #00A6ED;
-            width: 35px;
-            height: 35px;
-            font-size: 35px;
-            cursor: pointer;
-            position: fixed;
-            bottom: 200px;
-            left: 15%; 
-            border-radius: 5px;
-            box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.4);
-            transition: all 0.3s ease-in-out;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            line-height: 1;
-            text-align: center; 
-        }
-        .image-container img {
-            width: 130px;
-            height: auto;
-            border-radius: 22px;
-            transition: opacity 0.3s ease-in-out;
-            position: fixed;
-            bottom: 150px;
-            left: 50%;
-            transform: translateX(-50%);
-    
-        }
         .container {
             background: rgba(0, 0, 0, 0.4); /* 배경만 반투명 */
             padding: 10px;
@@ -153,13 +118,6 @@
     <video class="video-background" autoplay muted playsinline id="bg-video">
         <source src="catmom6.mp4" type="video/mp4">
     </video>
-    <div class="slider-container">
-        <div class="image-container">
-            <img id="slider-image" src="nuri11.png" alt="슬라이드 이미지">
-        </div>
-        <button class="arrow-button" onclick="nextImage()">▶️</button>
-    </div>
-    
     <div class="container">
         <input type="text" id="answer">
         <button onclick="checkAnswer()">입력</button>
@@ -178,13 +136,6 @@
     </div>
     
     <script>
-        const images = ["nuri11.png", "nuri22.png", "nuri33.png", "nuri44.png"];
-        let currentIndex = 0;
-
-        function nextImage() {
-            currentIndex = (currentIndex + 1) % images.length; // 마지막 이미지 이후 첫 번째로 순환
-            document.getElementById("slider-image").src = images[currentIndex];
-        }
         let score = localStorage.getItem("score") ? parseInt(localStorage.getItem("score")) : 100;
         let hint1Used = false;
         let hint2Used = false;
@@ -195,7 +146,7 @@
             localStorage.setItem("score", score);
         }
         function useHint1() {
-            document.getElementById('modalText').innerText = "우선 크기가 다른 새집들을 찾아!";
+            document.getElementById('modalText').innerText = "입구에 도서관 이용안내를 찾아 봐.";
             document.getElementById('modal').style.display = "block";
             document.getElementById('hint2').disabled = false;
             if (!hint1Used) {
@@ -204,7 +155,7 @@
             }
         }
         function useHint2() {
-            document.getElementById('modalText').innerText = "새집마다 누리의 발자국 수가 다르잖아!";
+            document.getElementById('modalText').innerText = "해미도서관 전화번호: 041-688-XXXX.";
             document.getElementById('modal').style.display = "block";
             document.getElementById('answerBtn').disabled = false;
             if (!hint2Used) {
@@ -213,7 +164,7 @@
             }
         }
         function showAnswerModal() {
-            document.getElementById('modalText').innerText = "4756";
+            document.getElementById('modalText').innerText = "0351";
             document.getElementById('modal').style.display = "block";
             if (!answerUsed) {
                 updateScore(-1);
@@ -229,11 +180,11 @@
         }
         function checkAnswer() {
             var answer = document.getElementById('answer').value;
-            var correctAnswer = "4756";
+            var correctAnswer = "0351";
             if (answer === correctAnswer) {
-                window.location.href = "https://baekko.github.io/baekkohouse/catmom7.html";
+                window.location.href = "https://baekko.github.io/baekkohouse/catmom4.html";
             } else {
-                document.getElementById('modalText').innerText = "누리의 발자국에 대해 다시 알아봐!";
+                document.getElementById('modalText').innerText = "실망인데.. 해미도서관 전화번호도 몰라?";
                 document.getElementById('modal').style.display = "block";
             }
         }
