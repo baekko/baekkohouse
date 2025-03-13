@@ -118,13 +118,17 @@
         }
         @media (orientation: landscape) {
     html, body {
-        height: auto; /* 높이를 자동으로 설정 */
-        min-height: 100vh; /* 최소한 화면 크기만큼 보장 */
-        overflow-y: auto; /* 스크롤 가능하게 */
+        height: auto;
+        overflow-y: auto; /* 세로 스크롤 가능 */
     }
     
-    .container, .button-container {
-        position: static; /* fixed를 해제해서 자연스럽게 흐름을 따르게 */
+    .container {
+        position: fixed; /* 고정 유지 */
+        bottom: 50px; /* 원래 설정 유지 */
+        left: 50%; /* 가운데 정렬 유지 */
+        transform: translateX(-50%); /* 위치 보정 */
+        width: 60%; /* 원래 너비 유지 */
+        max-width: 375px; /* 최대 크기 유지 */
     }
 }
     </style>
