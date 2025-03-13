@@ -118,8 +118,13 @@
         }
         @media (orientation: landscape) {
     html, body {
-        height: auto; /* 높이를 자동으로 설정해서 스크롤 가능하게 만듦 */
-        overflow-y: auto; /* 가로 모드에서는 세로 스크롤 허용 */
+        height: auto; /* 높이를 자동으로 설정 */
+        min-height: 100vh; /* 최소한 화면 크기만큼 보장 */
+        overflow-y: auto; /* 스크롤 가능하게 */
+    }
+    
+    .container, .button-container {
+        position: static; /* fixed를 해제해서 자연스럽게 흐름을 따르게 */
     }
 }
     </style>
