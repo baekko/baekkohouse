@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>고양이 낚시대 게임</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: Courier, sans-serif;
+            
+        }
+        .video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+        .image-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            max-width: 400px;
+            z-index: 1; /* 비디오 위에 표시 */
+           
+           
+        }
+
+        .hidden {
+            display: none;
+        }
+        .button-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: fixed; /* 버튼을 화면에 고정 */
+            bottom: 20px; /* 화면 하단에 위치 */
+            width: 100%;
+            transform: translate3d(0, 0, 0);
+        }
+        .next-button {
+            padding: 4px 6px;
+            font-size: 12px;
+            font-weight: bold;
+            width: 65px;
+            cursor: pointer;
+            background-color: rgba(0, 0, 0, 0.5); /* 배경만 반투명 */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            opacity: 0;
+            visibility: hidden;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+        }
+        .next-button:hover {
+            background-color: black;
+        }
+
+        @keyframes showButton {
+            to {
+                opacity: 1;
+                visibility: visible;
+            }
+        }
+
+        /* 모바일에서 버튼 크기와 위치 조정 */
+        @media (max-width: 768px) {
+            .next-button {
+                font-size: 12px;
+                padding: 4px 6px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <video class="video-background" autoplay muted playsinline id="bg-video">
+        <source src="catmom52.mp4" type="video/mp4">
+    </video>
+    <img id="catImage" class="image-overlay" src="daniel1.png" alt="고양이 장난감">
+    <div class="button-container">   
+        <button class="next-button" id="nextButton" onclick="goToNextPage()">다음</button>
+    </div>
+    <script>
+      let images = [
+            "daniel1.png", "daniel2.png", "daniel1.png", "daniel3.png", 
+            "daniel4.png"
+        ];
+        let finalImages = ["daniel5.png", "daniel6.png", "daniel7.png", "daniel8.png"];
+        let turn = 0;
+        let cycleCount = 0;
+        let currentIndex = 0;
+        let lastUpdate = Date.now();
+        let threshold = 50;
+
+        window.addEventListener("devicemotion", (event) => {
+            let acceleration = event.accelerationIncludingGravity;
+            let change = Math.abs(acceleration.x) + Math.abs(acceleration.y) + Math.abs(acceleration.z);
+
+            if (change > threshold && Date.now() - lastUpdate > 100) {
+                lastUpdate = Date.now();
+                nextImage();
+            }
+        });
+
+        function nextImage() {
+            let catImage = document.getElementById("catImage");
+
+            if (cycleCount < 3) {
+                currentIndex = (currentIndex + 1) % images.length;
+                if (currentIndex === images.length - 1) {
+                    cycleCount++;
+                }
+            } else {
+                currentIndex = images.length;
+                catImage.src = finalImages[turn];
+                turn++;
+                if (turn >= finalImages.length) {
+                    turn = 0;
+                }
+                return;
+            }
+
+            catImage.src = images[currentIndex];
+        }
+    </script>
+</body>
+</html>
