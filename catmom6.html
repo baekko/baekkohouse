@@ -118,21 +118,14 @@
         }
         @media (orientation: landscape) {
     html, body {
-        height: auto;
-        overflow-y: auto; /* 세로 스크롤 가능 */
+        height: auto; /* 가로 모드일 때 높이 자동 조정 */
+        min-height: 100vh;
+        overflow-y: auto; /* 세로 스크롤 활성화 */
     }
-    
-    .container {
-        position: fixed; /* 고정 유지 */
-        bottom: 50px; /* 원래 설정 유지 */
-        left: 50%; /* 가운데 정렬 유지 */
-        transform: translateX(-50%); /* 위치 보정 */
-        width: 60%; /* 원래 너비 유지 */
-        max-width: 375px; /* 최대 크기 유지 */
-    }
-             .content-wrapper {
-        min-height: 100vh; /* 내용이 늘어나면 자연스럽게 스크롤 */
-        padding-bottom: 100px; /* 버튼들이 가려지지 않도록 여백 확보 */
+
+    .wrapper {
+        min-height: 100vh; /* 최소 높이 보장 */
+        padding-bottom: 120px; /* 버튼 가려지는 문제 방지 */
     }
 }
     </style>
