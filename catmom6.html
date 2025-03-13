@@ -9,9 +9,11 @@
             text-align: center;
             font-family: Courier, sans-serif;
             margin: 0;
-            height: 100vh;
-            overflow: hidden; /* 기본적으로 스크롤 방지 */
         }
+        html, body {
+            height: 100vh;
+            overflow: hidden; /* 기본적으로 세로 모드에서 스크롤 방지 */
+         }
         .video-background {
             position: fixed;
             top: 0;
@@ -114,11 +116,12 @@
                 padding: 4px 6px;
             }        
         }
-        @media (orientation: landscape) { 
-            body {
-                overflow-y: auto; /* 가로 모드일 때 스크롤 가능하게 */
-            }
-        }
+        @media (orientation: landscape) {
+    html, body {
+        height: auto; /* 높이를 자동으로 설정해서 스크롤 가능하게 만듦 */
+        overflow-y: auto; /* 가로 모드에서는 세로 스크롤 허용 */
+    }
+}
     </style>
 </head>
 <body>
