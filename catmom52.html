@@ -21,16 +21,16 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            z-index: -1;
+            z-index: -1000;
         }
         .image-overlay {
             position: absolute;
-            top: 50%;
+            top: 70%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 250px;
-            height: 250px;
-            z-index: 1;
+            width: 300px;
+            height: 450px;
+            z-index: -500;
         }
         .color-container {
             display: flex;
@@ -142,13 +142,13 @@
     </video> 
     <img id="catImage" class="image-overlay" src="daniel1.png" alt="고양이 장난감">
     <div class="color-container">
-        <button class="color-button" style="background-image: url('salmon.png');" onclick="recordSelection('연어')"></button>
-        <button class="color-button" style="background-image: url('tuna.png');" onclick="recordSelection('참치')"></button>
-        <button class="color-button" style="background-image: url('shrimp.png');" onclick="recordSelection('새우')"></button>
-        <button class="color-button" style="background-image: url('clam.png');" onclick="recordSelection('조개')"></button>
-        <button class="color-button" style="background-image: url('cod.png');" onclick="recordSelection('고등어')"></button>
+        <button class="color-button" style="background-image: url('feather1.png');" onclick="recordSelection('노란색')"></button>
+        <button class="color-button" style="background-image: url('feather2.png');" onclick="recordSelection('빨간색')"></button>
+        <button class="color-button" style="background-image: url('feather3.png');" onclick="recordSelection('파란색')"></button>
+        <button class="color-button" style="background-image: url('feather4.png');" onclick="recordSelection('검은색')"></button>
+        <button class="color-button" style="background-image: url('feather5.png');" onclick="recordSelection('갈색')"></button>
         <button class="confirm-button" onclick="checkSequence()">입력</button>
-        <button class="action-button" onclick="resetGame()">다시</button>
+        <button class="action-button" onclick="resetGame()">처음</button>
     </div>          
     <div class="button-container">
         <button id="hint1" class="hint-button" onclick="useHint1()">힌트 1</button>
@@ -164,7 +164,7 @@
     </div>
 
     <script>
-        const correctSequence = ['연어', '참치', '새우', '조개', '고등어'];
+        const correctSequence = ['노란색', '빨간색', '파란색', '검은색', '갈색색'];
         let userInput = [];
 
         function recordSelection(food) {
@@ -235,17 +235,13 @@
         let images = [
             "daniel1.png", "daniel2.png", "daniel1.png", "daniel3.png",
             "daniel1.png", "daniel2.png", "daniel1.png", "daniel3.png",
-            "daniel1.png", "daniel2.png", "daniel1.png", "daniel3.png",
             "daniel4.png", "daniel5.png",
-            "daniel1.png", "daniel2.png", "daniel1.png", "daniel3.png",
             "daniel1.png", "daniel2.png", "daniel1.png", "daniel3.png",
             "daniel1.png", "daniel2.png", "daniel1.png", "daniel3.png",
             "daniel4.png", "daniel6.png",
             "daniel1.png", "daniel2.png", "daniel1.png", "daniel3.png",
             "daniel1.png", "daniel2.png", "daniel1.png", "daniel3.png",
-            "daniel1.png", "daniel2.png", "daniel1.png", "daniel3.png",
             "daniel4.png", "daniel7.png",
-            "daniel1.png", "daniel2.png", "daniel1.png", "daniel3.png",
             "daniel1.png", "daniel2.png", "daniel1.png", "daniel3.png",
             "daniel1.png", "daniel2.png", "daniel1.png", "daniel3.png",
             "daniel4.png", "daniel8.png"
