@@ -197,7 +197,7 @@
             localStorage.setItem("score", score);
         }
         function useHint1() {
-            document.getElementById('modalText').innerText = "도서관 내에 지도를 찾아!";
+            document.getElementById('modalText').innerText = "지도에서 찾았으면 제일 먼저 아래방향으로 가야한다는건 알겠지?";
             document.getElementById('modal').style.display = "block";
             document.getElementById('hint2').disabled = false;
             if (!hint1Used) {
@@ -206,7 +206,7 @@
             }
         }
         function useHint2() {
-            document.getElementById('modalText').innerText = "지도에서 해미도서관을 찾았으면 제일 먼저 아래방향으로 가야한다는건 알겠지? ";
+            document.getElementById('modalText').innerText = "공사로 막힌 길은 지나갈 수 없어.";
             document.getElementById('modal').style.display = "block";
             document.getElementById('answerBtn').disabled = false;
             if (!hint2Used) {
