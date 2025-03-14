@@ -148,7 +148,7 @@
             localStorage.setItem("score", score);
         }
         function useHint1() {
-            document.getElementById('modalText').innerText = "입구에 도서관 이용안내를 찾아 봐.";
+            document.getElementById('modalText').innerText = "두식이는 과거의 고양이라는걸 잊지마!";
             document.getElementById('modal').style.display = "block";
             document.getElementById('hint2').disabled = false;
             if (!hint1Used) {
@@ -157,7 +157,7 @@
             }
         }
         function useHint2() {
-            document.getElementById('modalText').innerText = "해미도서관 전화번호: 041-688-XXXX.";
+            document.getElementById('modalText').innerText = "slept는 sleep의 과거형이야.";
             document.getElementById('modal').style.display = "block";
             document.getElementById('answerBtn').disabled = false;
             if (!hint2Used) {
@@ -186,7 +186,7 @@
             if (answer === correctAnswer) {
                 window.location.href = "https://baekko.github.io/baekkohouse/catmom26.html";
             } else {
-                document.getElementById('modalText').innerText = "실망인데.. 해미도서관 전화번호도 몰라?";
+                document.getElementById('modalText').innerText = "아니야. 다시 한번 생각해봐.";
                 document.getElementById('modal').style.display = "block";
             }
         }
