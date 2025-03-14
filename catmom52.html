@@ -164,11 +164,11 @@
     </div>
 
     <script>
-        const correctSequence = ['노란색', '빨간색', '파란색', '검은색', '갈색색'];
+        const correctSequence = ['노란색', '파란색', '빨간색', '갈색'];
         let userInput = [];
 
         function recordSelection(food) {
-            if (userInput.length < 5) {
+            if (userInput.length < 4) {
                 userInput.push(food);
             }
         }
@@ -200,7 +200,7 @@
             localStorage.setItem("score", score);
         }
         function useHint1() {
-            document.getElementById('modalText').innerText = "도서관에서 '주간 간식 수칙' 을 찾아!";
+            document.getElementById('modalText').innerText = "흔들라니까!";
             document.getElementById('modal').style.display = "block";
             document.getElementById('hint2').disabled = false;
             if (!hint1Used) {
@@ -209,7 +209,7 @@
             }
         }
         function useHint2() {
-            document.getElementById('modalText').innerText = "월요일에 연어야!";
+            document.getElementById('modalText').innerText = "깃발을 물기전에 직전 준비자세가 있어!";
             document.getElementById('modal').style.display = "block";
             document.getElementById('answerBtn').disabled = false;
             if (!hint2Used) {
@@ -218,7 +218,7 @@
             }
         }
         function showAnswerModal() {
-            document.getElementById('modalText').innerText = "연어-닭고기-고등어-참치-조개-새우";
+            document.getElementById('modalText').innerText = "노란색-파란색-빨간색-갈색";
             document.getElementById('modal').style.display = "block";
             if (!answerUsed) {
                 updateScore(-1);
