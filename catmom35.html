@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>방향키 정답 입력</title>
+    <title>관장님의 비밀업무</title>
     <style>
         body {
             text-align: center;
@@ -197,7 +197,7 @@
             localStorage.setItem("score", score);
         }
         function useHint1() {
-            document.getElementById('modalText').innerText = "도서관 내에 지도를 찾아!";
+            document.getElementById('modalText').innerText = "이건 고양이들의 사진을 봐야 알 수 있어!";
             document.getElementById('modal').style.display = "block";
             document.getElementById('hint2').disabled = false;
             if (!hint1Used) {
@@ -206,7 +206,7 @@
             }
         }
         function useHint2() {
-            document.getElementById('modalText').innerText = "지도에서 해미도서관을 찾았으면 제일 먼저 아래방향으로 가야한다는건 알겠지? ";
+            document.getElementById('modalText').innerText = "모든 고양이가 정면을 보고 있진 않아!";
             document.getElementById('modal').style.display = "block";
             document.getElementById('answerBtn').disabled = false;
             if (!hint2Used) {
