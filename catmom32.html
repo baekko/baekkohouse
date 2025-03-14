@@ -171,7 +171,7 @@
             localStorage.setItem("score", score);
         }
         function useHint1() {
-            document.getElementById('modalText').innerText = "통합데스크에 가면 실마리가 풀릴거야";
+            document.getElementById('modalText').innerText = "5가지 맛이 각각 최소 1개 이상은 필요해!";
             document.getElementById('modal').style.display = "block";
             document.getElementById('hint2').disabled = false;
             if (!hint1Used) {
@@ -180,7 +180,7 @@
             }
         }
         function useHint2() {
-            document.getElementById('modalText').innerText = "실로폰 음계마다 색이달라";
+            document.getElementById('modalText').innerText = "회색은 흰색과 검은색의 1대1 비율의 조합으로 만들어져!";
             document.getElementById('modal').style.display = "block";
             document.getElementById('answerBtn').disabled = false;
             if (!hint2Used) {
@@ -189,7 +189,7 @@
             }
         }
         function showAnswerModal() {
-            document.getElementById('modalText').innerText = "나비야";
+            document.getElementById('modalText').innerText = "빨간색 3개, 노란색 3개, 파란색 3개, 흰색 1개, 검은색 1개";
             document.getElementById('modal').style.display = "block";
             if (!answerUsed) {
                 updateScore(-1);
@@ -216,7 +216,7 @@
             if (isCorrect) {
                 window.location.href = "https://baekko.github.io/baekkohouse/catmom33.html";
             } else {
-                document.getElementById("modalText").innerText = "오답입니다! 다시 시도해보세요.";
+                document.getElementById("modalText").innerText = "츄르를 다시 조합해야해!";
                 document.getElementById("modal").style.display = "block";
             }
         }
