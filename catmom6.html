@@ -146,7 +146,7 @@
             localStorage.setItem("score", score);
         }
         function useHint1() {
-            document.getElementById('modalText').innerText = "입구에 도서관 이용안내를 찾아 봐.";
+            document.getElementById('modalText').innerText = "유아자료실에서 그림과 비슷한 것을 찾으면 발자국들이 보일거야.";
             document.getElementById('modal').style.display = "block";
             document.getElementById('hint2').disabled = false;
             if (!hint1Used) {
@@ -155,7 +155,7 @@
             }
         }
         function useHint2() {
-            document.getElementById('modalText').innerText = "해미도서관 전화번호: 041-688-XXXX.";
+            document.getElementById('modalText').innerText = "발자국 개수가 다르잖아!";
             document.getElementById('modal').style.display = "block";
             document.getElementById('answerBtn').disabled = false;
             if (!hint2Used) {
@@ -164,7 +164,7 @@
             }
         }
         function showAnswerModal() {
-            document.getElementById('modalText').innerText = "0351";
+            document.getElementById('modalText').innerText = "6472";
             document.getElementById('modal').style.display = "block";
             if (!answerUsed) {
                 updateScore(-1);
@@ -180,11 +180,11 @@
         }
         function checkAnswer() {
             var answer = document.getElementById('answer').value;
-            var correctAnswer = "0351";
+            var correctAnswer = "6472";
             if (answer === correctAnswer) {
-                window.location.href = "https://baekko.github.io/baekkohouse/catmom4.html";
+                window.location.href = "https://baekko.github.io/baekkohouse/catmom7.html";
             } else {
-                document.getElementById('modalText').innerText = "실망인데.. 해미도서관 전화번호도 몰라?";
+                document.getElementById('modalText').innerText = " 답이 아니야. 다시 생각해봐.";
                 document.getElementById('modal').style.display = "block";
             }
         }
