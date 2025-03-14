@@ -146,7 +146,7 @@
             localStorage.setItem("score", score);
         }
         function useHint1() {
-            document.getElementById('modalText').innerText = "우선 고양이들 사진을 찾아야겠지?";
+            document.getElementById('modalText').innerText = "사진을 찾았으면 4마리와 다른 고양이들의 차이가 보일거야.";
             document.getElementById('modal').style.display = "block";
             document.getElementById('hint2').disabled = false;
             if (!hint1Used) {
@@ -184,7 +184,7 @@
             if (answer === correctAnswer) {
                 window.location.href = "https://baekko.github.io/baekkohouse/catmom10.html";
             } else {
-                document.getElementById('modalText').innerText = "아니야, 고양이들은 다르게 말했어.";
+                document.getElementById('modalText').innerText = "아니야, 그런 말 한적 없어.";
                 document.getElementById('modal').style.display = "block";
             }
         }
