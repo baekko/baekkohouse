@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>음식 순서 맞추기</title>
+    <style>
+        body {
+            background-image: url("ctm52.jpg"); 
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+            font-family: Arial, sans-serif;
+        }
+        .image-overlay {
+            position: absolute;
+            top: 70%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            height: 450px;
+            z-index: -500;
+        }
+        .color-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            position: fixed;
+            bottom: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            flex-wrap: nowrap; /* 버튼 한 줄로 배치 */
+        }
+        .color-button, .confirm-button, .action-button {
+            width: 35px;
+            height: 35px;
+            background-size: cover;
+            background-position: center;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s ease-in-out;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+        }
+        .color-button:hover {
+            transform: scale(1.1);
+        }
+        .confirm-button, .action-button {
+            padding: 6px 4px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            color: white;
+            background-color: orange;
+            border: none;
+            border-radius: 5px;
+            
+        }
+        .button-container {
+            position: fixed;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+        }
+        .hint-button {
+            padding: 4px 6px;
+            width: 65px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            color: white;
+            background-color: orange;
+            border: none;
+            border-radius: 5px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.466);
+        }
+        .hint-button:disabled {
+            background-color: rgb(109, 93, 93) !important;
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            padding: 15px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+        .modal-content {
+            text-align: center;
+    }       
+        .close {
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        @media (max-width: 768px) {
+            .color-button {
+                width: 35px;
+                height: 35px;
+            }
+            .confirm-button {
+                font-size: 12px;
+                padding: 6px 4px;
+            }
+            .action-button {
+                font-size: 12px;
+                padding: 6px 4px;
+            }
+            .hint-button {
+                font-size: 12px;
+                padding: 4px 6px;      
+        }
+    </style>
+</head>
+<body>
+    <img id="catImage" class="image-overlay" src="daniel1.png" alt="고양이 장난감">
+    <div class="color-container">
+        <button class="color-button" style="background-image: url('feather1.png');" onclick="recordSelection('노란색')"></button>
+        <button class="color-button" style="background-image: url('feather2.png');" onclick="recordSelection('빨간색')"></button>
+        <button class="color-button" style="background-image: url('feather3.png');" onclick="recordSelection('파란색')"></button>
+        <button class="color-button" style="background-image: url('feather4.png');" onclick="recordSelection('검은색')"></button>
+        <button class="color-button" style="background-image: url('feather5.png');" onclick="recordSelection('갈색')"></button>
+        <button class="confirm-button" onclick="checkSequence()">입력</button>
+        <button class="action-button" onclick="resetGame()">처음</button>
+    </div>          
+    <div class="button-container">
+        <button id="hint1" class="hint-button" onclick="useHint1()">힌트 1</button>
+        <button id="hint2" class="hint-button" onclick="useHint2()" disabled>힌트 2</button>
+        <button id="answerBtn" class="hint-button" onclick="showAnswerModal()" disabled>정답 보기</button>
+        <button class="hint-button" onclick="showScore()">점수 보기</button>
+    </div>
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <p id="modalText"></p>
+        </div>
+    </div>
+
+    <script>
+        const correctSequence = ['노란색', '파란색', '빨간색', '갈색'];
+        let userInput = [];
+
+        function recordSelection(food) {
+            if (userInput.length < 4) {
+                userInput.push(food);
+            }
+        }
+        function checkSequence() {
+          console.log("사용자 입력:", userInput);
+          console.log("정답:", correctSequence);
+
+         // 배열을 하나씩 비교하는 방식으로 수정
+        let isCorrect = userInput.length === correctSequence.length &&
+                    userInput.every((val, index) => val === correctSequence[index]);
+
+        if (isCorrect) {
+          console.log("정답입니다! 다음 페이지로 이동");
+          window.location.href = "https://baekko.github.io/baekkohouse/ctm53.html";
+        } else {
+          console.log("오답! 모달 표시");
+          document.getElementById('modalText').innerText = "순서가 틀린것 같아!";
+          document.getElementById('modal').style.display = "block";
+          userInput = []; // 오답 시 입력값 초기화
+        }
+    }
+        let score = localStorage.getItem("score") ? parseInt(localStorage.getItem("score")) : 100;
+        let hint1Used = false;
+        let hint2Used = false;
+        let answerUsed = false;
+
+        function updateScore(points) {
+            score += points;
+            localStorage.setItem("score", score);
+        }
+        function useHint1() {
+            document.getElementById('modalText').innerText = "흔들라니까!";
+            document.getElementById('modal').style.display = "block";
+            document.getElementById('hint2').disabled = false;
+            if (!hint1Used) {
+                updateScore(-1);
+                hint1Used = true;
+            }
+        }
+        function useHint2() {
+            document.getElementById('modalText').innerText = "깃발을 물기전에 직전 준비자세가 있어!";
+            document.getElementById('modal').style.display = "block";
+            document.getElementById('answerBtn').disabled = false;
+            if (!hint2Used) {
+                updateScore(-1);
+                hint2Used = true;
+            }
+        }
+        function showAnswerModal() {
+            document.getElementById('modalText').innerText = "노란색-파란색-빨간색-갈색";
+            document.getElementById('modal').style.display = "block";
+            if (!answerUsed) {
+                updateScore(-1);
+                answerUsed = true;
+            }
+        }
+        function showScore() {
+            document.getElementById('modalText').innerText = "현재 점수: " + score + "점";
+            document.getElementById('modal').style.display = "block";
+        }
+        function closeModal() {
+            document.getElementById('modal').style.display = "none";
+        }
+        let images = [
+            "daniel1.png", "daniel2.png", "daniel1.png", "daniel3.png",
+            "daniel1.png", "daniel2.png", "daniel1.png", "daniel3.png",
+            "daniel4.png", "daniel5.png", "daniel5.png",
+            "daniel1.png", "daniel2.png", "daniel1.png", "daniel3.png",
+            "daniel1.png", "daniel2.png", "daniel1.png", "daniel3.png",
+            "daniel4.png", "daniel6.png", "daniel6.png",
+            "daniel1.png", "daniel2.png", "daniel1.png", "daniel3.png",
+            "daniel1.png", "daniel2.png", "daniel1.png", "daniel3.png",
+            "daniel4.png", "daniel7.png", "daniel7.png",
+            "daniel1.png", "daniel2.png", "daniel1.png", "daniel3.png",
+            "daniel1.png", "daniel2.png", "daniel1.png", "daniel3.png",
+            "daniel4.png", "daniel8.png", "daniel8.png"
+        ];
+
+        let turn = 0;  
+        let cycleCount = 0;
+        let currentIndex = 0;
+        let shakeCount = 0;
+        let lastUpdate = Date.now();
+        let threshold = 40; 
+        let requiredShakes = 5; // 단계별로 필요한 흔들림 횟수
+
+       window.addEventListener("devicemotion", (event) => {
+            let change = Math.abs(event.acceleration.x) + Math.abs(event.acceleration.y) + Math.abs(event.acceleration.z);
+            if (change > threshold && Date.now() - lastUpdate > 100) {
+                lastUpdate = Date.now();
+                shakeCount++;
+                if (shakeCount >= requiredShakes) {
+                    shakeCount = 0;
+                    nextImage();
+                }
+            }
+        });
+
+        function nextImage() {
+            let catImage = document.getElementById("catImage");
+            if (currentIndex < images.length - 1) {
+                currentIndex++;
+                catImage.src = images[currentIndex];
+            }
+        }
+        function resetGame() {
+            document.getElementById("catImage").src = "daniel1.png";
+            currentIndex = 0;
+            cycleCount = 0;
+            shakeCount = 0;
+            turn = 0;
+        }
+    </script>
+</body>
+</html>
+
