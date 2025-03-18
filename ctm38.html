@@ -16,11 +16,13 @@
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             gap: 0;
-            width: 80vw;
+            width: 70vw;
             max-width: 350px;
-            transform: translateX(-5px); /* 왼쪽으로 5px 이동 */
-            margin-top: 40px;
-            
+            transform: translateX(-7px); /* 왼쪽으로 7px 이동 */
+            top: 80px;  
+            /* 수평 정렬 (추가) */
+            margin-left: auto;
+            margin-right: auto;      
         }
         .image-box {
             width: 100%;
@@ -69,7 +71,7 @@
         }
         button {
             padding: 4px 6px;
-            width: 65px;
+            width: 45px;
             font-size: 12px;
             font-weight: bold;
             cursor: pointer;
@@ -152,10 +154,10 @@
         <button onclick="checkAnswer()">입력</button>
     </div>   
     <div class="button-container">
-        <button id="hint1" onclick="useHint1()">힌트 1</button>
-        <button id="hint2" onclick="useHint2()" disabled>힌트 2</button>
-        <button id="answerBtn" onclick="showAnswerModal()" disabled>정답 보기</button>
-        <button onclick="showScore()">점수 보기</button>
+        <button id="hint1" onclick="useHint1()">힌트1</button>
+        <button id="hint2" onclick="useHint2()" disabled>힌트2</button>
+        <button id="answerBtn" onclick="showAnswerModal()" disabled>정답</button>
+        <button onclick="showScore()">점수</button>
     </div>
     <div id="modal" class="modal">
         <div class="modal-content">
