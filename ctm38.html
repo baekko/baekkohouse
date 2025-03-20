@@ -52,7 +52,7 @@
             left: 50%;
             transform: translateX(-50%);
             display: flex;
-            gap: 15px;
+            gap: 10px;
         }
         .input-container {
             display: flex;
@@ -71,7 +71,7 @@
         }
         button {
             padding: 4px 6px;
-            width: 45px;
+            width: 65px;
             font-size: 12px;
             font-weight: bold;
             cursor: pointer;
@@ -157,10 +157,10 @@
         <button onclick="checkAnswer()">입력</button>
     </div>   
     <div class="button-container">
-        <button id="hint1" onclick="useHint1()">힌트1</button>
-        <button id="hint2" onclick="useHint2()" disabled>힌트2</button>
-        <button id="answerBtn" onclick="showAnswerModal()" disabled>정답</button>
-        <button onclick="showScore()">점수</button>
+        <button id="hint1" onclick="useHint1()">힌트 1</button>
+        <button id="hint2" onclick="useHint2()" disabled>힌트 2</button>
+        <button id="answerBtn" onclick="showAnswerModal()" disabled>정답 보기</button>
+        <button onclick="showScore()">점수 보기</button>
     </div>
     <div id="modal" class="modal">
         <div class="modal-content">
