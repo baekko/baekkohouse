@@ -105,12 +105,13 @@
                 padding: 10px;
             }
             input {
-                font-size: 12px;
+                font-size: 12px; !important;  /* 강제 적용 */
                 width: 60%;
             }
             button {
-                font-size: 12px;
-                padding: 4px 6px;
+                font-size: 12px; !important;  /* 강제 적용 */
+                padding: 4px 6px; !important;  /* 강제 적용 */
+                min-width: auto !important;  /* 자동 확장 방지 */
             }
         }
 
