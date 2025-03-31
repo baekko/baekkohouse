@@ -140,6 +140,9 @@
     <video class="video-background" autoplay muted playsinline id="bg-video">
         <source src="catmom52.mp4" type="video/mp4">
     </video> 
+    <div id="permissionNotice" style="position:fixed; top:0; left:0; width:100%; padding:10px; background-color:yellow; z-index:9999;">
+    모션 인식을 위해 화면을 터치해 주세요!
+</div>
     <img id="catImage" class="image-overlay" src="daniel1.png" alt="고양이 장난감">
     <div class="color-container">
         <button class="color-button" style="background-image: url('feather1.png');" onclick="recordSelection('노란색')"></button>
@@ -164,6 +167,20 @@
     </div>
 
     <script>
+        if (typeof DeviceMotionEvent.requestPermission === 'function') {
+    document.body.addEventListener('click', () => {
+        DeviceMotionEvent.requestPermission()
+            .then(response => {
+                if (response == 'granted') {
+                    document.getElementById('permissionNotice').style.display = 'none';
+                    console.log('Device motion 권한 허용됨.');
+                } else {
+                    alert('Device motion 권한이 허용되지 않았습니다.');
+                }
+            })
+            .catch(console.error);
+    }, { once: true });
+}
         const correctSequence = ['노란색', '파란색', '빨간색', '갈색'];
         let userInput = [];
 
