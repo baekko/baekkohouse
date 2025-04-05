@@ -146,7 +146,7 @@
             localStorage.setItem("score", score);
         }
         function useHint1() {
-            document.getElementById('modalText').innerText = "사진을 찾았으면 4마리와 다른 고양이들의 차이가 보일거야.";
+            document.getElementById('modalText').innerText = "사진을 찾았으면 4마리와 다른 고양이들의\n 차이가 보일거야.";
             document.getElementById('modal').style.display = "block";
             document.getElementById('hint2').disabled = false;
             if (!hint1Used) {
@@ -155,7 +155,7 @@
             }
         }
         function useHint2() {
-            document.getElementById('modalText').innerText = "아래 부분에 페인트로 지워진 글자를 알아내!";
+            document.getElementById('modalText').innerText = "페인트로 지워진 글자를 알아내!";
             document.getElementById('modal').style.display = "block";
             document.getElementById('answerBtn').disabled = false;
             if (!hint2Used) {
