@@ -187,7 +187,7 @@
             localStorage.setItem("score", score);
         }
         function useHint1() {
-            document.getElementById('modalText').innerText = "지도에서 찾았으면 제일 먼저 아래방향으로 가야한다는건 알겠지?";
+            document.getElementById('modalText').innerText = "지도를 찾았다면 먼저 아래방향으로\n 가야한다는건 알겠지?";
             document.getElementById('modal').style.display = "block";
             document.getElementById('hint2').disabled = false;
             if (!hint1Used) {
@@ -205,7 +205,7 @@
             }
         }
         function showAnswerModal() {
-            document.getElementById('modalText').innerText = "아래쪽, 왼쪽, 위쪽, 오른쪽, 위쪽, 오른쪽, 위쪽";
+            document.getElementById('modalText').innerText = "▼, ◀, ▲, ▶, ▲, ▶, ▲";
             document.getElementById('modal').style.display = "block";
             if (!answerUsed) {
                 updateScore(-1);
