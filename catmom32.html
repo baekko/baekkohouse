@@ -171,7 +171,7 @@
             localStorage.setItem("score", score);
         }
         function useHint1() {
-            document.getElementById('modalText').innerText = "5가지 맛이 각각 최소 1개 이상은 필요해!";
+            document.getElementById('modalText').innerText = "5가지 맛 모두 최소 1개 이상은 필요해!";
             document.getElementById('modal').style.display = "block";
             document.getElementById('hint2').disabled = false;
             if (!hint1Used) {
@@ -180,7 +180,7 @@
             }
         }
         function useHint2() {
-            document.getElementById('modalText').innerText = "회색은 흰색과 검은색의 1대1 비율의 조합으로 만들어져!";
+            document.getElementById('modalText').innerText = "회색은 흰색과 검은색의 1대1 비율의\n 조합으로 만들어져!";
             document.getElementById('modal').style.display = "block";
             document.getElementById('answerBtn').disabled = false;
             if (!hint2Used) {
@@ -189,7 +189,7 @@
             }
         }
         function showAnswerModal() {
-            document.getElementById('modalText').innerText = "빨간색 3개, 노란색 3개, 파란색 3개, 흰색 1개, 검은색 1개";
+            document.getElementById('modalText').innerText = "빨간색 3개, 노란색 3개, 파란색 3개\n 흰색 1개, 검은색 1개";
             document.getElementById('modal').style.display = "block";
             if (!answerUsed) {
                 updateScore(-1);
