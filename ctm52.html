@@ -155,7 +155,6 @@
         DeviceMotionEvent.requestPermission()
             .then(response => {
                 if (response == 'granted') {
-                    document.getElementById('permissionNotice').style.display = 'none';
                     console.log('Device motion 권한 허용됨.');
                 } else {
                     alert('Device motion 권한이 허용되지 않았습니다.');
