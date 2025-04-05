@@ -197,7 +197,7 @@
             localStorage.setItem("score", score);
         }
         function useHint1() {
-            document.getElementById('modalText').innerText = "이건 고양이들의 사진을 봐야 알 수 있어!";
+            document.getElementById('modalText').innerText = "고양이들의 사진을 다시 볼 시간이야!";
             document.getElementById('modal').style.display = "block";
             document.getElementById('hint2').disabled = false;
             if (!hint1Used) {
@@ -215,7 +215,7 @@
             }
         }
         function showAnswerModal() {
-            document.getElementById('modalText').innerText = "위쪽, 오른쪽, 오른쪽, 아래쪽, 오른쪽, 아래쪽, 왼쪽";
+            document.getElementById('modalText').innerText = "▲, ▶, ▶, ▼, ▶, ▼, ◀";
             document.getElementById('modal').style.display = "block";
             if (!answerUsed) {
                 updateScore(-1);
