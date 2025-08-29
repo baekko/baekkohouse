@@ -53,7 +53,6 @@
     input{font-size:12px;width:60%;}
     button{font-size:12px;padding:4px 6px;}
   }
-
   /* 보상 영상 오버레이 */
   .video-overlay{
     display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);
@@ -71,7 +70,7 @@
   <div class="container">
     <div class="input-container">
       <input type="text" id="answer" autocomplete="off">
-      <button onclick="checkAnswer()">입력</button>
+      <button id="submitBtn">입력</button>
     </div>
   </div>
 
@@ -165,15 +164,20 @@ for (let i=0;i<35;i++){
   grid.appendChild(box);
 }
 
-/* ================== 게임 상태 / 스토리지 ================== */
+/* ================== 상태 / 스토리지 ================== */
 const nextUrl = "https://baekko.github.io/baekkohouse/ctm41.html";
-let currentAnswer = "너구리";     // 1단계 → 2단계("5638")
-let answeredQuestions = 0;
 
-let hintLevel = 0; // 0(없음)→1(힌트1)→2(힌트2)→3(정답보기)
+let currentAnswer = "너구리"; // Q1 → Q2("5638")
+let currentQuestion = 1;       // 1 또는 2
+
+let answeredQuestions = 0;
+let hintLevel1 = 0; // Q1 힌트 단계
+let hintLevel2 = 0; // Q2 힌트 단계
 
 const CHURU_KEY = "churuTotal";
-const PAGE_KEY  = "settled:" + location.pathname; // 이 페이지는 1회만 가산
+const PAGE_KEY_Q1 = "settled:" + location.pathname + ":q1";
+const PAGE_KEY_Q2 = "settled:" + location.pathname + ":q2";
+
 if (localStorage.getItem(CHURU_KEY) === null) localStorage.setItem(CHURU_KEY,"0");
 
 /* ================== 힌트/정답 텍스트 ================== */
@@ -196,6 +200,8 @@ const wrongMessages = {
 
 /* ================== 요소 ================== */
 const $answer = document.getElementById('answer');
+const $submit = document.getElementById('submitBtn');
+
 const $modal = document.getElementById('modal');
 const $modalText = document.getElementById('modalText');
 const $close = document.getElementById('closeModal');
@@ -220,42 +226,45 @@ window.addEventListener('click', e => { if (e.target === $modal) closeModal(); }
 /* ================== 힌트/정답 보기 ================== */
 $hint1.onclick = ()=>{
   openModal(hints[currentAnswer].hint1);
-  if (hintLevel < 1) hintLevel = 1;
+  if (currentQuestion === 1) { if (hintLevel1 < 1) hintLevel1 = 1; }
+  else { if (hintLevel2 < 1) hintLevel2 = 1; }
   $hint2.disabled = false;
 };
 $hint2.onclick = ()=>{
   openModal(hints[currentAnswer].hint2);
-  if (hintLevel < 2) hintLevel = 2;
+  if (currentQuestion === 1) { if (hintLevel1 < 2) hintLevel1 = 2; }
+  else { if (hintLevel2 < 2) hintLevel2 = 2; }
   $ansBtn.disabled = false;
 };
 $ansBtn.onclick = ()=>{
   openModal(hints[currentAnswer].answer);
-  if (hintLevel < 3) hintLevel = 3;
+  if (currentQuestion === 1) { if (hintLevel1 < 3) hintLevel1 = 3; }
+  else { if (hintLevel2 < 3) hintLevel2 = 3; }
 };
 $totalBtn.onclick = ()=>{
   const t = Number(localStorage.getItem(CHURU_KEY)||"0");
   openModal(`현재까지 획득한 츄르: ${t}개`);
 };
 
-/* ================== 정답 확인 ================== */
+/* ================== 정답 제출 ================== */
+$submit.onclick = checkAnswer;
+$answer.addEventListener('keydown', e=>{ if(e.key === 'Enter') checkAnswer(); });
+
 function checkAnswer(){
   const v = ($answer.value||"").trim();
   if (v === currentAnswer){
     answeredQuestions++;
-
-    if (answeredQuestions === 1){
-      // 1단계 정답: 안내 모달 표시 후 2단계로 전환
-      $correctModal.style.display = "block";
-    } else if (answeredQuestions === 2){
-      // 2단계 정답: 츄르 가산(1회) + 보상영상 + 다음 페이지
-      handleFinalClear();
+    if (currentQuestion === 1){
+      handleClearQ1(); // Q1 정답 처리(영상 + 가산) → 영상 끝나면 라쿤 모달
+    }else{
+      handleClearQ2(); // Q2 정답 처리(영상 + 가산) → 영상 끝나면 다음 페이지
     }
   }else{
     openModal(wrongMessages[currentAnswer] || "오답입니다! 다시 시도해보세요.");
   }
 }
 
-/* 1단계 정답 모달 닫기 → 2단계로 전환 */
+/* ================== 문제 전환 ================== */
 $closeCorrect.onclick = ()=>{
   $correctModal.style.display = "none";
   goNextQuestion("5638");
@@ -263,42 +272,55 @@ $closeCorrect.onclick = ()=>{
 
 function goNextQuestion(nextAnswer){
   currentAnswer = nextAnswer;
+  currentQuestion = 2;
+
+  // 입력창 초기화
   $answer.value = "";
-  // 힌트 버튼 상태만 초기화(힌트 사용 이력은 유지 → hintLevel은 그대로)
+
+  // 힌트 UI 초기화
   $hint1.disabled = false;
   $hint2.disabled = true;
   $ansBtn.disabled = true;
 }
 
-/* ================== 최종 클리어 처리 ================== */
-function handleFinalClear(){
-  // 이미 처리된 페이지면 가산 없이 영상만
-  if (localStorage.getItem(PAGE_KEY) !== "1"){
-    const addMap = [3,2,1,0]; // 힌트 사용량에 따른 획득량
-    const add = addMap[hintLevel] ?? 0;
+/* ================== 보상/가산 공통 ================== */
+const addMap = [3,2,1,0]; // 0~3단계 → 3/2/1/0개
+
+function awardOnceAndPlay(questionIdx, hintLevelUsed, afterVideo){
+  const key = (questionIdx === 1) ? PAGE_KEY_Q1 : PAGE_KEY_Q2;
+
+  // 1) 가산(중복 방지)
+  if (localStorage.getItem(key) !== "1"){
+    const add = addMap[hintLevelUsed] ?? 0;
     const cur = Number(localStorage.getItem(CHURU_KEY)||"0");
     localStorage.setItem(CHURU_KEY, String(cur + add));
-    localStorage.setItem(PAGE_KEY, "1"); // ✅ 중복가산 방지
+    localStorage.setItem(key, "1");
   }
-  playRewardAndGo();
+
+  // 2) 영상 재생
+  playRewardFor(hintLevelUsed, afterVideo);
 }
 
-function playRewardAndGo(){
-  const src = ["curu1.mp4","curu2.mp4","curu3.mp4","curu4.mp4"][hintLevel] || "curu4.mp4";
+function playRewardFor(hintLevelUsed, afterVideo){
+  const src = ["curu1.mp4","curu2.mp4","curu3.mp4","curu4.mp4"][hintLevelUsed] || "curu4.mp4";
   $video.src = src;
 
-  // 🔇 음소거 보장 (모바일 자동재생 Friendly)
+  // 🔇 모바일 자동재생 안정화
   $video.muted = true; $video.defaultMuted = true; $video.volume = 0;
+
+  // 하단 버튼 잠금
+  [$hint1,$hint2,$ansBtn,$totalBtn,$submit].forEach(b=>b.disabled = true);
 
   $video.currentTime = 0;
   $overlay.style.display = "flex";
   $overlay.setAttribute("aria-hidden","false");
 
-  // 버튼 잠금
-  [$hint1,$hint2,$ansBtn,$totalBtn].forEach(b=>b.disabled = true);
-
-  // 끝나면 다음 페이지
-  $video.onended = ()=>{ location.href = nextUrl; };
+  $video.onended = ()=>{
+    // 오버레이 닫기
+    $overlay.style.display = "none";
+    // 이후 동작
+    if (typeof afterVideo === 'function') afterVideo();
+  };
 
   const p = $video.play();
   if (p && typeof p.catch === "function"){
@@ -306,11 +328,29 @@ function playRewardAndGo(){
   }
 }
 
-/* ================== 초기 렌더 ================== */
-function renderImages(){
-  // 위에서 이미 그리드 채웠음 (초기 로드 시 호출만 보장)
+/* ================== 각 문제 처리 ================== */
+function handleClearQ1(){
+  const used = hintLevel1; // Q1에서 사용한 힌트 단계
+  awardOnceAndPlay(1, used, ()=>{
+    // Q1 보상 끝난 뒤 라쿤 모달 열기
+    $correctModal.style.display = "block";
+    // 모달 상태에서 버튼 재활성화(다음 단계로 넘어가게)
+    $hint1.disabled = false;
+    $hint2.disabled = true;
+    $ansBtn.disabled = true;
+    $submit.disabled = false;
+  });
 }
-document.addEventListener("DOMContentLoaded", renderImages);
+
+function handleClearQ2(){
+  const used = hintLevel2; // Q2에서 사용한 힌트 단계
+  awardOnceAndPlay(2, used, ()=>{
+    // Q2 보상 끝나면 다음 페이지
+    location.href = nextUrl;
+  });
+}
 </script>
 </body>
 </html>
+
+
