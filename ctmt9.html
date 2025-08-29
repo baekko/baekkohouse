@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>관장님의 비밀업무</title>
+  <style>
+    body{
+      background-image:url("ctm9.jpg");
+      background-size:cover;background-position:center;background-attachment:fixed;
+      font-family:Arial,sans-serif;margin:0;
+    }
+    .container{
+      background:rgba(0,0,0,0.4);
+      padding:10px;border-radius:10px;text-align:center;
+      position:fixed;bottom:50px;left:50%;transform:translateX(-50%);
+      width:60%;max-width:375px;display:flex;flex-direction:column;align-items:center;
+    }
+    .button-container{
+      position:fixed;bottom:15px;left:50%;transform:translateX(-50%);
+      display:flex;gap:10px;
+    }
+    .input-container{display:flex;align-items:center;width:100%;justify-content:center;}
+    input{
+      padding:8px;font-size:14px;width:60%;border:none;border-radius:5px;margin-right:10px;
+      caret-color:orange;
+    }
+    button{
+      padding:4px 6px;font-size:12px;font-weight:bold;width:65px;cursor:pointer;
+      color:#fff;background:orange;border:none;border-radius:5px;
+      box-shadow:0 4px 6px rgba(0,0,0,0.466);
+    }
+    button:disabled{background:rgb(109,93,93)!important;cursor:not-allowed;opacity:.8}
+
+    /* 모달 */
+    .modal{
+      display:none;position:fixed;z-index:1000;left:50%;top:50%;transform:translate(-50%,-50%);
+      width:300px;padding:15px;background:#fff;border-radius:10px;box-shadow:0 4px 8px rgba(0,0,0,0.2);
+    }
+    .modal-content{text-align:center;}
+    .close{float:right;cursor:pointer;font-size:20px;font-weight:bold;}
+
+    /* 정답 보상 영상 오버레이 */
+    .video-overlay{
+      display:none; /* 초기엔 무조건 none 한 번만 선언 */
+      position:fixed;inset:0;background:rgba(0,0,0,.6);
+      z-index:2000;align-items:center;justify-content:center;
+    }
+    .video-box{
+      width:min(70vw,420px);background:#000;border-radius:12px;overflow:hidden;
+      box-shadow:0 10px 24px rgba(0,0,0,.35);
+    }
+    video{width:100%;height:auto;display:block}
+
+    @media (max-width:768px){
+      .container{width:80%;padding:10px;}
+      input{font-size:12px;width:60%;}
+      button{font-size:12px;padding:4px 6px;}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="input-container">
+      <input type="text" id="answer" autocomplete="off">
+      <button id="submitBtn">입력</button>
+    </div>
+  </div>
+
+  <div class="button-container">
+    <button id="hint1">힌트 1</button>
+    <button id="hint2" disabled>힌트 2</button>
+    <button id="answerBtn" disabled>정답 보기</button>
+    <button id="totalBtn">츄르 합계</button>
+  </div>
+
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <span class="close" id="closeModal">&times;</span>
+      <p id="modalText"></p>
+    </div>
+  </div>
+
+  <!-- 보상 영상 -->
+  <div id="videoOverlay" class="video-overlay" aria-hidden="true">
+    <div class="video-box">
+      <!-- 음소거 + 인라인 재생 -->
+      <video id="rewardVideo" playsinline muted></video>
+    </div>
+  </div>
+
+  <script>
+    /***** 페이지별 설정 *****/
+    const correctAnswer = "MEOW";
+    const nextUrl = "https://baekko.github.io/baekkohouse/ctm10.html";
+
+    /***** 상태 *****/
+    // 힌트 단계: 0(없음)->1(힌트1)->2(힌트2)->3(정답보기)
+    let hintLevel = 0;
+
+    // 누적 합계 키 & 페이지 중복가산 방지 키 (탭/새로고침/재접속 모두 방지: localStorage 사용)
+    const CHURU_KEY = "churuTotal";
+    const PAGE_KEY  = "settled:" + location.pathname;
+
+    if (localStorage.getItem(CHURU_KEY) === null) localStorage.setItem(CHURU_KEY, "0");
+
+    /***** 요소 *****/
+    const $answer = document.getElementById('answer');
+    const $submit = document.getElementById('submitBtn');
+    const $hint1  = document.getElementById('hint1');
+    const $hint2  = document.getElementById('hint2');
+    const $ansBtn = document.getElementById('answerBtn');
+    const $total  = document.getElementById('totalBtn');
+
+    const $modal     = document.getElementById('modal');
+    const $modalText = document.getElementById('modalText');
+    const $close     = document.getElementById('closeModal');
+
+    const $overlay = document.getElementById('videoOverlay');
+    const $video   = document.getElementById('rewardVideo');
+
+    /***** 모달 *****/
+    function openModal(msg){ $modalText.innerText = msg; $modal.style.display = "block"; }
+    function closeModal(){ $modal.style.display = "none"; }
+    $close.onclick = closeModal;
+    window.addEventListener('click', e => { if (e.target === $modal) closeModal(); });
+
+    /***** 힌트 로직 *****/
+    $hint1.onclick = () => {
+      openModal("사진을 찾았으면 4마리와 다른\n 고양이들의 차이가 보일거야.");
+      if (hintLevel < 1) hintLevel = 1;
+      $hint2.disabled = false;
+    };
+
+    $hint2.onclick = () => {
+      openModal("페인트로 지워진 글자를 알아내!");
+      if (hintLevel < 2) hintLevel = 2;
+      $ansBtn.disabled = false;
+    };
+
+    $ansBtn.onclick = () => {
+      openModal("MEOW");
+      if (hintLevel < 3) hintLevel = 3;
+    };
+
+    $total.onclick = () => {
+      const total = Number(localStorage.getItem(CHURU_KEY) || "0");
+      openModal(`현재까지 획득한 츄르: ${total}개`);
+    };
+
+    /***** 정답 처리 *****/
+    function checkAnswer(){
+      const v = ($answer.value || "").trim();
+      if (v === correctAnswer) {
+        closeModal();
+        handleCorrectOnce();
+      } else {
+        openModal("답이 아니야. 다시 생각해봐.");
+      }
+    }
+
+    function handleCorrectOnce(){
+      // 이미 이 페이지에서 처리했다면 가산 없이 영상만 재생 후 이동
+      if (localStorage.getItem(PAGE_KEY) === "1") {
+        playRewardAndGo();
+        return;
+      }
+      // 가산
+      const addMap = [3,2,1,0]; // hintLevel 0~3
+      const add = addMap[hintLevel] ?? 0;
+      const cur = Number(localStorage.getItem(CHURU_KEY) || "0");
+      localStorage.setItem(CHURU_KEY, String(cur + add));
+      localStorage.setItem(PAGE_KEY, "1"); // ✅ 중복가산 방지 플래그
+
+      playRewardAndGo();
+    }
+
+    function playRewardAndGo(){
+      const src = ["curu1.mp4","curu2.mp4","curu3.mp4","curu4.mp4"][hintLevel] || "curu4.mp4";
+      $video.src = src;
+
+      // 🔇 음소거 보장 (모바일 자동재생 호환)
+      $video.muted = true;
+      $video.defaultMuted = true;
+      $video.volume = 0;
+
+      $video.currentTime = 0;
+      $overlay.style.display = "flex";
+      $overlay.setAttribute("aria-hidden","false");
+
+      // 입력/버튼 잠금
+      [$submit,$hint1,$hint2,$ansBtn,$total].forEach(b=>b.disabled = true);
+
+      // 재생 종료 → 다음 페이지
+      $video.onended = () => { location.href = nextUrl; };
+
+      // 자동재생 시도, 실패시 controls 노출
+      const p = $video.play();
+      if (p && typeof p.catch === 'function') {
+        p.catch(() => { $video.setAttribute('controls','controls'); });
+      }
+    }
+
+    $submit.onclick = checkAnswer;
+    $answer.addEventListener('keydown', e => { if (e.key === 'Enter') checkAnswer(); });
+  </script>
+</body>
+</html>

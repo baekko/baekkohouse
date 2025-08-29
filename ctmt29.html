@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>관장님의 비밀업무</title>
+<style>
+  body{
+    background-image:url("ctm29.jpg");
+    background-size:cover;background-position:center;background-attachment:fixed;
+    font-family:Arial,sans-serif;margin:0;
+  }
+  .food-container{
+    display:flex;justify-content:center;gap:10px;position:fixed;bottom:70px;
+    left:50%;transform:translateX(-50%);flex-wrap:nowrap;
+  }
+  .food-button,.confirm-button{
+    width:35px;height:35px;background-size:cover;background-position:center;
+    border:none;border-radius:10px;cursor:pointer;transition:transform .2s ease-in-out;
+    box-shadow:0 4px 6px rgba(0,0,0,.2);
+  }
+  .food-button:hover{transform:scale(1.1);}
+  .confirm-button{
+    padding:6px 4px;font-size:12px;font-weight:bold;color:#fff;background:orange;border-radius:5px;
+  }
+  .button-container{
+    position:fixed;bottom:15px;left:50%;transform:translateX(-50%);display:flex;gap:10px;
+  }
+  .hint-button{
+    padding:4px 6px;width:65px;font-size:12px;font-weight:bold;cursor:pointer;color:#fff;
+    background:orange;border:none;border-radius:5px;box-shadow:0 4px 6px rgba(0,0,0,.466);
+  }
+  .hint-button:disabled{background:rgb(109,93,93)!important;cursor:not-allowed;opacity:.8}
+  .modal{
+    display:none;position:fixed;z-index:1000;left:50%;top:50%;transform:translate(-50%,-50%);
+    width:300px;padding:15px;background:#fff;border-radius:10px;box-shadow:0 4px 8px rgba(0,0,0,.2);
+  }
+  .modal-content{text-align:center;position:relative;}
+  .close{
+    position:absolute;top:50%;right:10px;transform:translateY(-50%);
+    font-size:20px;font-weight:bold;cursor:pointer;
+  }
+  /* 보상 영상 오버레이 */
+  .video-overlay{
+    display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);
+    z-index:2000;align-items:center;justify-content:center;
+  }
+  .video-box{
+    width:min(70vw,420px);background:#000;border-radius:12px;overflow:hidden;
+    box-shadow:0 10px 24px rgba(0,0,0,.35);
+  }
+  video{width:100%;height:auto;display:block}
+  @media (max-width:768px){
+    .food-button{width:35px;height:35px;}
+    .confirm-button{font-size:12px;padding:6px 4px;}
+    .hint-button{font-size:12px;padding:4px 6px;}
+  }
+</style>
+</head>
+<body>
+  <!-- 간식 선택 줄 -->
+  <div class="food-container">
+    <button class="food-button" style="background-image:url('salmon.png');"  onclick="recordSelection('연어')"></button>
+    <button class="food-button" style="background-image:url('tuna.png');"    onclick="recordSelection('참치')"></button>
+    <button class="food-button" style="background-image:url('shrimp.png');"  onclick="recordSelection('새우')"></button>
+    <button class="food-button" style="background-image:url('clam.png');"    onclick="recordSelection('조개')"></button>
+    <button class="food-button" style="background-image:url('cod.png');"     onclick="recordSelection('고등어')"></button>
+    <button class="food-button" style="background-image:url('chicken.png');" onclick="recordSelection('닭고기')"></button>
+    <button class="confirm-button" onclick="checkSequence()">입력</button>
+  </div>
+
+  <!-- 힌트/합계 -->
+  <div class="button-container">
+    <button id="hint1" class="hint-button">힌트 1</button>
+    <button id="hint2" class="hint-button" disabled>힌트 2</button>
+    <button id="answerBtn" class="hint-button" disabled>정답 보기</button>
+    <button id="totalBtn" class="hint-button">츄르 합계</button>
+  </div>
+
+  <!-- 안내 모달 -->
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <span class="close" id="closeModal">&times;</span>
+      <p id="modalText"></p>
+    </div>
+  </div>
+
+  <!-- 보상 영상 -->
+  <div id="videoOverlay" class="video-overlay" aria-hidden="true">
+    <div class="video-box">
+      <video id="rewardVideo" playsinline muted></video>
+    </div>
+  </div>
+
+<script>
+/* ===== 페이지 설정 ===== */
+const correctSequence = ['연어','닭고기','고등어','참치','조개','새우'];
+const nextUrl = "https://baekko.github.io/baekkohouse/ctm30.html";
+
+/* ===== 입력/상태 ===== */
+let userInput = [];  // 최대 6개
+let hintLevel = 0;   // 0: 없음, 1: 힌트1, 2: 힌트2, 3: 정답보기
+
+/* ===== 스토리지 키 ===== */
+const CHURU_KEY = "churuTotal";
+const PAGE_KEY  = "settled:" + location.pathname; // 이 경로 문제는 1회만 가산
+if (localStorage.getItem(CHURU_KEY) === null) localStorage.setItem(CHURU_KEY,"0");
+
+/* ===== 엘리먼트 ===== */
+const $modal = document.getElementById('modal');
+const $modalText = document.getElementById('modalText');
+const $close = document.getElementById('closeModal');
+const $hint1 = document.getElementById('hint1');
+const $hint2 = document.getElementById('hint2');
+const $ansBtn = document.getElementById('answerBtn');
+const $totalBtn = document.getElementById('totalBtn');
+const $overlay = document.getElementById('videoOverlay');
+const $video = document.getElementById('rewardVideo');
+
+/* ===== 모달 ===== */
+function openModal(txt){ $modalText.innerText = txt; $modal.style.display = "block"; }
+function closeModal(){ $modal.style.display = "none"; }
+$close.onclick = closeModal;
+window.addEventListener('click', e => { if (e.target === $modal) closeModal(); });
+
+/* ===== 선택 기록 ===== */
+function recordSelection(food){
+  if (userInput.length < correctSequence.length){
+    userInput.push(food);
+  }
+}
+
+/* ===== 정답 확인 ===== */
+function checkSequence(){
+  const ok = userInput.length === correctSequence.length &&
+             userInput.every((v,i)=> v === correctSequence[i]);
+
+  if (ok){
+    closeModal();
+    handleCorrectOnce();
+  }else{
+    openModal("간식 수칙에 어긋나");
+    userInput = []; // 오답 시 초기화
+  }
+}
+
+/* ===== 힌트/정답 보기 ===== */
+$hint1.onclick = () => {
+  openModal("토요일 다음날은 월요일이 아니라\n 일요일이야!");
+  if (hintLevel < 1) hintLevel = 1;
+  $hint2.disabled = false;
+};
+$hint2.onclick = () => {
+  openModal("월요일에 연어야!");
+  if (hintLevel < 2) hintLevel = 2;
+  $ansBtn.disabled = false;
+};
+$ansBtn.onclick = () => {
+  openModal("연어-닭고기-고등어-참치-조개-새우");
+  if (hintLevel < 3) hintLevel = 3;
+};
+$totalBtn.onclick = () => {
+  const t = Number(localStorage.getItem(CHURU_KEY)||"0");
+  openModal(`현재까지 획득한 츄르: ${t}개`);
+};
+
+/* ===== 정답 처리: 한 번만 가산 → 보상영상 → 다음 페이지 ===== */
+function handleCorrectOnce(){
+  if (localStorage.getItem(PAGE_KEY) === "1"){
+    playRewardAndGo(); // 이미 처리된 페이지면 가산 없이 영상만
+    return;
+  }
+  const addMap = [3,2,1,0]; // 힌트 사용량별 획득량
+  const add = addMap[hintLevel] ?? 0;
+  const cur = Number(localStorage.getItem(CHURU_KEY)||"0");
+  localStorage.setItem(CHURU_KEY, String(cur + add));
+  localStorage.setItem(PAGE_KEY, "1"); // ✅ 중복가산 방지
+
+  playRewardAndGo();
+}
+
+function playRewardAndGo(){
+  const src = ["curu1.mp4","curu2.mp4","curu3.mp4","curu4.mp4"][hintLevel] || "curu4.mp4";
+  $video.src = src;
+
+  // 🔇 음소거 보장 & 모바일 자동재생 Friendly
+  $video.muted = true; $video.defaultMuted = true; $video.volume = 0;
+
+  $video.currentTime = 0;
+  $overlay.style.display = "flex";
+  $overlay.setAttribute("aria-hidden","false");
+
+  // 버튼 잠금
+  [$hint1,$hint2,$ansBtn,$totalBtn].forEach(b=>b.disabled = true);
+
+  // 영상 종료 → 다음 페이지
+  $video.onended = () => { location.href = nextUrl; };
+
+  const p = $video.play();
+  if (p && typeof p.catch === "function"){
+    p.catch(()=>{ $video.setAttribute('controls','controls'); });
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>관장님의 비밀업무</title>
+<style>
+  body{
+    background-image:url("ctm16.jpg");
+    background-size:cover;background-position:center;background-attachment:fixed;
+    font-family:Arial,sans-serif;margin:0;
+  }
+
+  /* 이미지 슬라이더 */
+  .slider-container{display:flex;align-items:center;justify-content:center;margin-top:50px;}
+  .arrow-button{
+    background:#00A6ED;width:35px;height:35px;font-size:35px;cursor:pointer;
+    position:fixed;bottom:200px;left:15%;
+    border-radius:5px;box-shadow:3px 3px 5px rgba(0,0,0,.4);
+    transition:all .3s ease-in-out;display:flex;align-items:center;justify-content:center;
+    line-height:1;text-align:center;border:none;color:#fff;
+  }
+  .arrow-button:active{transform:scale(0.98);}
+  .image-container img{
+    width:130px;height:auto;border-radius:22px;transition:opacity .3s ease-in-out;
+    position:fixed;bottom:150px;left:50%;transform:translateX(-50%);
+    user-select:none;pointer-events:none;
+  }
+
+  /* 입력창 박스 */
+  .container{
+    background:rgba(0,0,0,.4);padding:10px;border-radius:10px;text-align:center;
+    position:fixed;bottom:50px;left:50%;transform:translateX(-50%);
+    width:60%;max-width:375px;display:flex;flex-direction:column;align-items:center;
+  }
+  .input-container{display:flex;align-items:center;width:100%;justify-content:center;}
+  input{
+    padding:8px;font-size:14px;width:60%;border:none;border-radius:5px;margin-right:10px;
+    caret-color:orange;
+  }
+  .primary-btn{
+    padding:4px 6px;font-size:12px;font-weight:bold;width:65px;cursor:pointer;
+    color:#fff;background:orange;border:none;border-radius:5px;box-shadow:0 4px 6px rgba(0,0,0,.466);
+  }
+  .primary-btn:disabled{background:rgb(109,93,93)!important;cursor:not-allowed;opacity:.8}
+
+  /* 하단 컨트롤 버튼 */
+  .button-container{
+    position:fixed;bottom:15px;left:50%;transform:translateX(-50%);
+    display:flex;gap:10px;
+  }
+  .button-container button{ composes: primary-btn; } /* (설명용) */
+
+  /* 모달 */
+  .modal{
+    display:none;position:fixed;z-index:1000;left:50%;top:50%;transform:translate(-50%,-50%);
+    width:300px;padding:15px;background:#fff;border-radius:10px;box-shadow:0 4px 8px rgba(0,0,0,.2);
+  }
+  .modal-content{text-align:center;}
+  .close{float:right;cursor:pointer;font-size:20px;font-weight:bold;}
+
+  /* 정답 보상 영상 오버레이 */
+  .video-overlay{
+    display:none; /* 초기엔 반드시 none */
+    position:fixed;inset:0;background:rgba(0,0,0,.6);
+    z-index:2000;align-items:center;justify-content:center;
+  }
+  .video-box{
+    width:min(70vw,420px);background:#000;border-radius:12px;overflow:hidden;
+    box-shadow:0 10px 24px rgba(0,0,0,.35);
+  }
+  video{width:100%;height:auto;display:block}
+
+  @media (max-width:768px){
+    .container{width:80%;padding:10px;}
+    input{font-size:12px;width:60%;}
+    .primary-btn{font-size:12px;padding:4px 6px;}
+  }
+</style>
+</head>
+<body>
+  <!-- 슬라이더 -->
+  <div class="slider-container">
+    <div class="image-container">
+      <img id="slider-image" src="blackcat11.png" alt="슬라이드 이미지">
+    </div>
+    <button class="arrow-button" onclick="nextImage()">▶️</button>
+  </div>
+
+  <!-- 입력창 -->
+  <div class="container">
+    <div class="input-container">
+      <input type="text" id="answer" autocomplete="off" />
+      <button id="submitBtn" class="primary-btn">입력</button>
+    </div>
+  </div>
+
+  <!-- 하단 컨트롤 -->
+  <div class="button-container">
+    <button id="hint1"    class="primary-btn">힌트 1</button>
+    <button id="hint2"    class="primary-btn" disabled>힌트 2</button>
+    <button id="answerBtn"class="primary-btn" disabled>정답 보기</button>
+    <button id="totalBtn" class="primary-btn">츄르 합계</button>
+  </div>
+
+  <!-- 안내 모달 -->
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <span class="close" id="closeModal">&times;</span>
+      <p id="modalText"></p>
+    </div>
+  </div>
+
+  <!-- 보상 영상 -->
+  <div id="videoOverlay" class="video-overlay" aria-hidden="true">
+    <div class="video-box">
+      <!-- 음소거 + 인라인 재생 -->
+      <video id="rewardVideo" playsinline muted></video>
+    </div>
+  </div>
+
+<script>
+/* ===== 페이지별 설정 ===== */
+const correctAnswer = "3258";
+const nextUrl = "https://baekko.github.io/baekkohouse/ctm17.html";
+
+/* ===== 슬라이더 ===== */
+const images = ["blackcat11.png","blackcat22.png","blackcat33.png","blackcat44.png"];
+let currentIndex = 0;
+function nextImage(){
+  currentIndex = (currentIndex + 1) % images.length;
+  document.getElementById("slider-image").src = images[currentIndex];
+}
+
+/* ===== 상태 ===== */
+// 힌트 단계: 0(없음) → 1(힌트1) → 2(힌트2) → 3(정답보기)
+let hintLevel = 0;
+
+/* ===== 스토리지 키 ===== */
+const CHURU_KEY = "churuTotal";
+const PAGE_KEY  = "settled:" + location.pathname; // 이 경로 문제는 한 번만 가산
+if (localStorage.getItem(CHURU_KEY) === null) localStorage.setItem(CHURU_KEY,"0");
+
+/* ===== 요소 ===== */
+const $answer   = document.getElementById('answer');
+const $submit   = document.getElementById('submitBtn');
+const $hint1    = document.getElementById('hint1');
+const $hint2    = document.getElementById('hint2');
+const $ansBtn   = document.getElementById('answerBtn');
+const $totalBtn = document.getElementById('totalBtn');
+
+const $modal     = document.getElementById('modal');
+const $modalText = document.getElementById('modalText');
+const $close     = document.getElementById('closeModal');
+
+const $overlay = document.getElementById('videoOverlay');
+const $video   = document.getElementById('rewardVideo');
+
+/* ===== 모달 ===== */
+function openModal(msg){ $modalText.innerText = msg; $modal.style.display = "block"; }
+function closeModal(){ $modal.style.display = "none"; }
+$close.onclick = closeModal;
+window.addEventListener('click', e => { if (e.target === $modal) closeModal(); });
+
+/* ===== 힌트/정답 보기 ===== */
+$hint1.onclick = () => {
+  openModal("도서검색대를 이용해!");
+  if (hintLevel < 1) hintLevel = 1;
+  $hint2.disabled = false;
+};
+$hint2.onclick = () => {
+  openModal("고양이가 2마리라면 숫자를 합쳐야겠지.");
+  if (hintLevel < 2) hintLevel = 2;
+  $ansBtn.disabled = false;
+};
+$ansBtn.onclick = () => {
+  openModal("3258");
+  if (hintLevel < 3) hintLevel = 3;
+};
+$totalBtn.onclick = () => {
+  const t = Number(localStorage.getItem(CHURU_KEY)||"0");
+  openModal(`현재까지 획득한 츄르: ${t}개`);
+};
+
+/* ===== 정답 처리 ===== */
+function checkAnswer(){
+  const v = ($answer.value || "").trim();
+  if (v === correctAnswer){
+    closeModal();
+    handleCorrectOnce();
+  }else{
+    openModal("다시 한번 검은고양이를 자세히 봐!");
+  }
+}
+$submit.onclick = checkAnswer;
+$answer.addEventListener('keydown', e => { if(e.key === 'Enter') checkAnswer(); });
+
+/* ===== 한 번만 가산 → 보상영상 → 다음 페이지 ===== */
+function handleCorrectOnce(){
+  // 이미 처리된 페이지면 가산 없이 영상만
+  if (localStorage.getItem(PAGE_KEY) === "1"){
+    playRewardAndGo();
+    return;
+  }
+  const addMap = [3,2,1,0]; // 힌트 사용량에 따른 획득량
+  const add = addMap[hintLevel] ?? 0;
+  const cur = Number(localStorage.getItem(CHURU_KEY)||"0");
+  localStorage.setItem(CHURU_KEY, String(cur + add));
+  localStorage.setItem(PAGE_KEY, "1"); // ✅ 중복가산 방지
+
+  playRewardAndGo();
+}
+
+function playRewardAndGo(){
+  const src = ["curu1.mp4","curu2.mp4","curu3.mp4","curu4.mp4"][hintLevel] || "curu4.mp4";
+  $video.src = src;
+
+  // 🔇 음소거 보장 (모바일 자동재생 Friendly)
+  $video.muted = true;
+  $video.defaultMuted = true;
+  $video.volume = 0;
+
+  $video.currentTime = 0;
+  $overlay.style.display = "flex";
+  $overlay.setAttribute("aria-hidden","false");
+
+  // 제출/힌트 버튼 잠금
+  [$submit,$hint1,$hint2,$ansBtn,$totalBtn].forEach(b=>b.disabled = true);
+
+  // 영상 종료 → 다음 페이지
+  $video.onended = () => { location.href = nextUrl; };
+
+  // 자동재생 시도, 실패 시 controls 노출
+  const p = $video.play();
+  if (p && typeof p.catch === "function"){
+    p.catch(()=>{ $video.setAttribute('controls','controls'); });
+  }
+}
+</script>
+</body>
+</html>

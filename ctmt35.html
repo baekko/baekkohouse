@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>관장님의 비밀업무</title>
+<style>
+  body{
+    background-image:url("ctm35.jpg");
+    background-size:cover;background-position:center;background-attachment:fixed;
+    font-family:Arial,sans-serif;margin:0;
+  }
+
+  /* 방향키 그리드 */
+  .button-grid{
+    display:grid;
+    grid-template-columns:repeat(3,35px);
+    grid-template-rows:repeat(3,35px);
+    grid-template-areas:
+      ". up ."
+      "left confirm right"
+      ". down .";
+    gap:15px;justify-content:center;align-items:center;
+    position:absolute;left:50%;bottom:60px;transform:translateX(-50%);
+  }
+  .direction-button,.confirm-button{
+    width:35px;height:35px;font-size:35px;cursor:pointer;background:#00A6ED;color:#fff;
+    border:none;border-radius:5px;box-shadow:3px 3px 5px rgba(0,0,0,.4);
+    transition:all .3s ease-in-out;display:flex;align-items:center;justify-content:center;
+    font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;line-height:1;text-align:center;
+  }
+  .direction-button:hover,.confirm-button:hover{box-shadow:4px 4px 7px rgba(0,0,0,.5);transform:scale(1.1);}
+  .direction-button:active,.confirm-button:active{transform:scale(1.0);}
+  .direction-button.up{grid-area:up}
+  .direction-button.left{grid-area:left}
+  .direction-button.right{grid-area:right}
+  .direction-button.down{grid-area:down}
+  .confirm-button{grid-area:confirm;font-size:12px}
+
+  /* 하단 컨트롤 */
+  .button-container{
+    position:fixed;bottom:15px;left:50%;transform:translateX(-50%);display:flex;gap:10px;
+  }
+  button{
+    padding:4px 6px;width:65px;font-size:12px;font-weight:bold;cursor:pointer;color:#fff;
+    background:orange;border:none;border-radius:5px;box-shadow:0 4px 6px rgba(0,0,0,.466);
+  }
+  button:disabled{background:rgb(109,93,93)!important;cursor:not-allowed;opacity:.8}
+
+  /* 모달 */
+  .modal{
+    display:none;position:fixed;z-index:1000;left:50%;top:50%;transform:translate(-50%,-50%);
+    width:300px;padding:15px;background:#fff;border-radius:10px;box-shadow:0 4px 8px rgba(0,0,0,.2);
+  }
+  .modal-content{text-align:center;}
+  .close{float:right;cursor:pointer;font-size:20px;font-weight:bold;}
+
+  /* 정답 보상 영상 오버레이 */
+  .video-overlay{
+    display:none; /* 초기엔 반드시 none */
+    position:fixed;inset:0;background:rgba(0,0,0,.6);
+    z-index:2000;align-items:center;justify-content:center;
+  }
+  .video-box{
+    width:min(70vw,420px);background:#000;border-radius:12px;overflow:hidden;
+    box-shadow:0 10px 24px rgba(0,0,0,.35);
+  }
+  video{width:100%;height:auto;display:block}
+
+  /* 모바일 */
+  @media (max-width:768px){
+    .button-grid{
+      grid-template-columns:repeat(3,35px);
+      grid-template-rows:repeat(3,35px);
+      gap:10px;
+      left:50%;transform:translateX(-50%);
+    }
+    .direction-button{width:35px;height:35px;font-size:35px;}
+    .confirm-button{font-size:12px;}
+  }
+</style>
+</head>
+<body>
+  <!-- 방향 입력 UI -->
+  <div class="button-grid">
+    <button class="direction-button up"    onclick="recordDirection('up')">🔼</button>
+    <button class="direction-button left"  onclick="recordDirection('left')">◀️</button>
+    <button class="confirm-button"         onclick="checkSequence()">입력</button>
+    <button class="direction-button right" onclick="recordDirection('right')">▶️</button>
+    <button class="direction-button down"  onclick="recordDirection('down')">🔽</button>
+  </div>
+
+  <!-- 하단 컨트롤 -->
+  <div class="button-container">
+    <button id="hint1">힌트 1</button>
+    <button id="hint2" disabled>힌트 2</button>
+    <button id="answerBtn" disabled>정답 보기</button>
+    <button id="totalBtn">츄르 합계</button>
+  </div>
+
+  <!-- 안내 모달 -->
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <span class="close" id="closeModal">&times;</span>
+      <p id="modalText"></p>
+    </div>
+  </div>
+
+  <!-- 보상 영상 -->
+  <div id="videoOverlay" class="video-overlay" aria-hidden="true">
+    <div class="video-box">
+      <video id="rewardVideo" playsinline muted></video>
+    </div>
+  </div>
+
+<script>
+/* ===== 퍼즐 정답 시퀀스 & 페이지 설정 ===== */
+const correctSequence = ['up','right','right','down','right','down','left'];
+const nextUrl = "https://baekko.github.io/baekkohouse/ctm36.html";
+
+/* ===== 입력 상태 ===== */
+let userInput = [];               // 사용자가 누른 방향 기록 (최대 7)
+let hintLevel = 0;                // 0: 없음, 1: 힌트1, 2: 힌트2, 3: 정답보기
+
+/* ===== 누적/중복 방지 키 ===== */
+const CHURU_KEY = "churuTotal";
+const PAGE_KEY  = "settled:" + location.pathname; // 이 페이지는 1회만 가산
+if (localStorage.getItem(CHURU_KEY) === null) localStorage.setItem(CHURU_KEY,"0");
+
+/* ===== 엘리먼트 ===== */
+const $modal = document.getElementById('modal');
+const $modalText = document.getElementById('modalText');
+const $close = document.getElementById('closeModal');
+
+const $hint1 = document.getElementById('hint1');
+const $hint2 = document.getElementById('hint2');
+const $ansBtn = document.getElementById('answerBtn');
+const $totalBtn = document.getElementById('totalBtn');
+
+const $overlay = document.getElementById('videoOverlay');
+const $video = document.getElementById('rewardVideo');
+
+/* ===== 모달 공통 ===== */
+function openModal(txt){ $modalText.innerText = txt; $modal.style.display = "block"; }
+function closeModal(){ $modal.style.display = "none"; }
+$close.onclick = closeModal;
+window.addEventListener('click', e => { if (e.target === $modal) closeModal(); });
+
+/* ===== 방향 기록 ===== */
+function recordDirection(dir){
+  if (userInput.length < correctSequence.length){
+    userInput.push(dir);
+  }
+}
+
+/* ===== 입력 확인 ===== */
+function checkSequence(){
+  const isCorrect =
+    userInput.length === correctSequence.length &&
+    userInput.every((v,i)=> v === correctSequence[i]);
+
+  if (isCorrect){
+    closeModal();
+    handleCorrectOnce();
+  }else{
+    openModal("그 길이 아니야");
+    userInput = []; // 오답 시 초기화
+  }
+}
+
+/* ===== 힌트/정답 보기 ===== */
+$hint1.onclick = () => {
+  openModal("고양이들의 사진을 다시 볼 시간이야!");
+  if (hintLevel < 1) hintLevel = 1;
+  $hint2.disabled = false;
+};
+$hint2.onclick = () => {
+  openModal("모든 고양이가 정면을 보고 있진 않아!");
+  if (hintLevel < 2) hintLevel = 2;
+  $ansBtn.disabled = false;
+};
+$ansBtn.onclick = () => {
+  openModal("▲, ▶, ▶, ▼, ▶, ▼, ◀");
+  if (hintLevel < 3) hintLevel = 3;
+};
+$totalBtn.onclick = () => {
+  const t = Number(localStorage.getItem(CHURU_KEY)||"0");
+  openModal(`현재까지 획득한 츄르: ${t}개`);
+};
+
+/* ===== 정답 처리(한 번만 가산) → 영상 → 다음 페이지 ===== */
+function handleCorrectOnce(){
+  // 이미 처리한 적 있으면 가산 없이 영상만
+  if (localStorage.getItem(PAGE_KEY) === "1"){
+    playRewardAndGo();
+    return;
+  }
+  const addMap = [3,2,1,0];      // 힌트 사용량에 따른 획득량
+  const add = addMap[hintLevel] ?? 0;
+  const cur = Number(localStorage.getItem(CHURU_KEY)||"0");
+  localStorage.setItem(CHURU_KEY, String(cur + add));
+  localStorage.setItem(PAGE_KEY, "1"); // ✅ 중복가산 방지
+
+  playRewardAndGo();
+}
+
+function playRewardAndGo(){
+  const src = ["curu1.mp4","curu2.mp4","curu3.mp4","curu4.mp4"][hintLevel] || "curu4.mp4";
+  $video.src = src;
+
+  // 🔇 음소거 보장 (모바일 자동재생-Friendly)
+  $video.muted = true;
+  $video.defaultMuted = true;
+  $video.volume = 0;
+
+  $video.currentTime = 0;
+  $overlay.style.display = "flex";
+  $overlay.setAttribute("aria-hidden","false");
+
+  // 하단 버튼 잠금
+  [$hint1,$hint2,$ansBtn,$totalBtn].forEach(b=>b.disabled = true);
+
+  // 영상 종료 → 다음 페이지
+  $video.onended = () => { location.href = nextUrl; };
+
+  // 자동재생 시도, 실패시 controls 노출
+  const p = $video.play();
+  if (p && typeof p.catch === "function"){
+    p.catch(()=>{ $video.setAttribute('controls','controls'); });
+  }
+}
+</script>
+</body>
+</html>
