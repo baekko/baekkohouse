@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>관장님의 비밀업무</title>
+    <style>
+        body {
+            background-image: url("ctm101.jpg"); 
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed; /* 배경 이미지 고정 */
+            font-family: Arial, sans-serif;
+        }        
+        .next-button {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;               /* 가로 가운데 정렬 */
+            transform: translateX(-50%); /* 정확히 중앙으로 이동 */
+            z-index: 1001;
+            width: 40px;
+            height: 40px;
+            background: url("catfoot.png") center/cover no-repeat;
+            background-color: black;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0);
+            opacity: 0;
+            pointer-events: none;  
+            animation: showButton 0.5s ease-in forwards;
+            animation-delay: 2s;
+        }
+        @keyframes showButton {
+            to {
+                opacity: 1;
+                visibility: visible;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="button-container">
+        <button class="next-button" onclick="goToNextPage()"></button>
+    </div>   
+    <script>  
+        function goToNextPage() {
+            window.location.href = "https://baekko.github.io/baekkohouse/ctm2.html"; // 이동할 페이지 설정
+        }
+
+    </script>
+</body>
+</html>
