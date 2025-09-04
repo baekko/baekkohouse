@@ -11,11 +11,13 @@
             background-position: center;
             background-attachment: fixed; /* 배경 이미지 고정 */
             font-family: Arial, sans-serif;
-        }        
+            margin: 0;
+        }
+
         .next-button {
             position: fixed;
             bottom: 20px;
-            left: 50%;               /* 가로 가운데 정렬 */
+            left: 50%;                 /* 가로 가운데 정렬 */
             transform: translateX(-50%); /* 정확히 중앙으로 이동 */
             z-index: 1001;
             width: 40px;
@@ -25,28 +27,31 @@
             border: none;
             border-radius: 6px;
             cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0,0,0);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.5);
             opacity: 0;
-            pointer-events: none;  
+            visibility: hidden;
             animation: showButton 0.5s ease-in forwards;
-            animation-delay: 2s;
+            animation-delay: 2s; /* 2초 뒤에 나타남 */
         }
+
         @keyframes showButton {
             to {
                 opacity: 1;
                 visibility: visible;
+                pointer-events: auto;  /* 나타날 때 클릭 가능 */
             }
         }
     </style>
 </head>
 <body>
-    <div class="button-container">
-        <button class="next-button" onclick="goToNextPage()"></button>
-    </div>   
+    <button class="next-button" onclick="goToNextPage()"></button>
+
     <script>  
         function goToNextPage() {
-            window.location.href = "https://baekko.github.io/baekkohouse/ctm2.html"; // 이동할 페이지 설정
+            window.location.href = "https://baekko.github.io/baekkohouse/ctm2.html"; 
         }
     </script>
 </body>
 </html>
+
+
