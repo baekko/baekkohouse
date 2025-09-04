@@ -91,7 +91,7 @@
 
   <script>
     /***** 페이지별 설정 *****/
-    const correctAnswer = "ate";
+    const correctAnswer = "mate";
     const nextUrl = "https://baekko.github.io/baekkohouse/ctm26.html";
 
     /***** 상태 *****/
@@ -127,19 +127,19 @@
 
     /***** 힌트 로직 *****/
     $hint1.onclick = () => {
-      openModal("두식이는 과거의 고양이라는걸 잊지마!");
+      openModal("관장님이 이용규칙 하단에 짝꿍들을 기록해두신것 같아.");
       if (hintLevel < 1) hintLevel = 1;
       $hint2.disabled = false;
     };
 
     $hint2.onclick = () => {
-      openModal("slept는 sleep의 과거형이야.");
+      openModal("키트 속 고양이들 사진에 노란테두리 모양이 조금씩 다르네.");
       if (hintLevel < 2) hintLevel = 2;
       $ansBtn.disabled = false;
     };
 
     $ansBtn.onclick = () => {
-      openModal("ate");
+      openModal("mate");
       if (hintLevel < 3) hintLevel = 3;
     };
 
@@ -207,3 +207,4 @@
 </body>
 
 </html>
+
