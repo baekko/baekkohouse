@@ -150,8 +150,8 @@
 
     /***** 정답 처리 *****/
     function checkAnswer(){
-      const v = ($answer.value || "").trim();
-      if (v === correctAnswer) {
+      const v = ($answer.value || "").trim().toLowerCase();
+      if (v === correctAnswer.toLowerCase()) {
         closeModal();
         handleCorrectOnce();
       } else {
@@ -207,5 +207,6 @@
 </body>
 
 </html>
+
 
 
