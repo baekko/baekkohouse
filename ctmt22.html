@@ -182,15 +182,15 @@ $totalBtn.onclick = () => {
 };
 
 /* ===== 정답 처리 (대소문자 무시) ===== */
-function checkAnswer(){
-  const v = ($answer.value || "").trim().toLowerCase();
-  if (v.toUpperCase() === correctAnswer.toLowerCase()) {
-    closeModal();
-    handleCorrectOnce();
-  } else {
-    openModal("그 말을 하고 싶었던건 아닐거야");
-  }
-}
+ function checkAnswer(){
+      const v = ($answer.value || "").trim().toLowerCase();
+      if (v === correctAnswer.toLowerCase()) {
+        closeModal();
+        handleCorrectOnce();
+      } else {
+        openModal("그 말을 하고 싶었던건 아닐거야.");
+      }
+    }
 $submit.onclick = checkAnswer;
 $answer.addEventListener('keydown', e => { if(e.key === 'Enter') checkAnswer(); });
 
@@ -238,6 +238,7 @@ function playRewardAndGo(){
 </script>
 </body>
 </html>
+
 
 
 
