@@ -164,7 +164,7 @@ window.addEventListener('click', e => { if (e.target === $modal) closeModal(); }
 
 /* ===== 힌트/정답 보기 ===== */
 $hint1.onclick = () => {
-  openModal("도서검색대를 이용해!");
+  openModal("도서검색대를 이용해 책장에서 도서를 찾아!");
   if (hintLevel < 1) hintLevel = 1;
   $hint2.disabled = false;
 };
@@ -239,4 +239,5 @@ function playRewardAndGo(){
 </script>
 </body>
 </html>
+
 
