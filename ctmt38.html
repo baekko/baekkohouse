@@ -47,29 +47,28 @@
   }
   .modal img{max-width:100%;margin-top:10px;}
   .highlight-text{color:orange;font-weight:bold;}
-  /* === [추가] 미션 오버레이: 배경 투명, 초기 완전 숨김 === */
-#missionOverlay{
-  display:none;               /* 초기엔 완전 숨김 → 까만 박스 방지 */
-  position:fixed;
-  inset:0;
-  z-index:1500;
-  background:transparent;     /* 배경 어두워지지 않게 */
-  align-items:center;
-  justify-content:center;
-}
 
-/* 영상 컨테이너(선택): 영상만 살짝 강조하고 싶을 때 */
-#missionOverlay .video-box{
-  width:min(70vw,420px);
-  border-radius:12px;
-  overflow:hidden;
-  box-shadow:0 6px 16px rgba(0,0,0,.35);
-}
-
-/* === [중요 추가] video 초기 숨김 → 기본 검은 배경 노출 방지 === */
-#missionVideo{
-  display:none;               /* 1초 대기 중엔 비디오 자체를 숨김 */
-}
+  /* === 미션 오버레이: 배경 투명, 초기 완전 숨김 === */
+  #missionOverlay{
+    display:none;               /* 초기엔 완전 숨김 → 까만 박스 방지 */
+    position:fixed;
+    inset:0;
+    z-index:1500;
+    background:transparent;     /* 배경 어두워지지 않게 */
+    align-items:center;
+    justify-content:center;
+  }
+  /* 영상 컨테이너(선택): 영상만 살짝 강조하고 싶을 때 */
+  #missionOverlay .video-box{
+    width:min(70vw,420px);
+    border-radius:12px;
+    overflow:hidden;
+    box-shadow:0 6px 16px rgba(0,0,0,.35);
+  }
+  /* video 초기 숨김 → 기본 검은 배경 노출 방지 */
+  #missionVideo{
+    display:none;               /* 1초 대기 중엔 비디오 자체를 숨김 */
+  }
 
   @media (max-width:768px){
     .grid-container{margin-top:40px;}
@@ -77,6 +76,7 @@
     input{font-size:12px;width:60%;}
     button{font-size:12px;padding:4px 6px;}
   }
+
   /* 보상 영상 오버레이 */
   .video-overlay{
     display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);
@@ -119,14 +119,15 @@
     <img id="modalImage" src="racoonman.png" alt="정답 이미지">
     <p id="modalTextBelow">
       너구리였잖아!<br><br>매튜의 집을 어지럽힌 너구리를 찾아야 해.
-            <br><br>너구리를 찾아 복수하려면<br>고양이들의 대장을 알아내야 해.<br>고양이 대장에 대한 단서를 찾으려면<br>이 창을 닫고 너구리를 한번씩만 더 눌러!<br>그리고 그 숫자를 입력창에 입력해!<br><br><span class="highlight-text"></span>숫자 4자리 입력</p>
-    </div>
-  <!-- === [추가] 미션(인트로) 영상 오버레이 === -->
-<div id="missionOverlay" aria-hidden="true">
-  <div class="video-box">
-    <video id="missionVideo" playsinline muted></video>
+    </p>
   </div>
-</div>
+
+  <!-- 미션(인트로) 영상 오버레이 -->
+  <div id="missionOverlay" aria-hidden="true">
+    <div class="video-box">
+      <video id="missionVideo" playsinline muted></video>
+    </div>
+  </div>
 
   <!-- 보상 영상 -->
   <div id="videoOverlay" class="video-overlay" aria-hidden="true">
@@ -205,6 +206,9 @@ const CHURU_KEY = "churuTotal";
 const PAGE_KEY_Q1 = "settled:" + location.pathname + ":q1";
 const PAGE_KEY_Q2 = "settled:" + location.pathname + ":q2";
 
+/* === [추가] 배경 변경 여부 저장 키 === */
+const BG_CHANGED_KEY = "bgChanged:ctm38";
+
 if (localStorage.getItem(CHURU_KEY) === null) localStorage.setItem(CHURU_KEY,"0");
 
 /* ================== 힌트/정답 텍스트 ================== */
@@ -282,9 +286,9 @@ function checkAnswer(){
   if (v === currentAnswer){
     answeredQuestions++;
     if (currentQuestion === 1){
-      handleClearQ1(); // Q1 정답 처리(영상 + 가산) → 영상 끝나면 라쿤 모달
+      handleClearQ1(); // Q1 정답 처리
     }else{
-      handleClearQ2(); // Q2 정답 처리(영상 + 가산) → 영상 끝나면 다음 페이지
+      handleClearQ2(); // Q2 정답 처리
     }
   }else{
     openModal(wrongMessages[currentAnswer] || "오답입니다! 다시 시도해보세요.");
@@ -296,14 +300,11 @@ $closeCorrect.onclick = ()=>{
   $correctModal.style.display = "none";
   goNextQuestion("5638");
 };
-
 function goNextQuestion(nextAnswer){
   currentAnswer = nextAnswer;
   currentQuestion = 2;
-
   // 입력창 초기화
   $answer.value = "";
-
   // 힌트 UI 초기화
   $hint1.disabled = false;
   $hint2.disabled = true;
@@ -332,7 +333,7 @@ function playRewardFor(hintLevelUsed, afterVideo){
   const src = ["curu1.mp4","curu2.mp4","curu3.mp4","curu4.mp4"][hintLevelUsed] || "curu4.mp4";
   $video.src = src;
 
-  // 🔇 모바일 자동재생 안정화
+  // 모바일 자동재생 안정화
   $video.muted = true; $video.defaultMuted = true; $video.volume = 0;
 
   // 하단 버튼 잠금
@@ -355,8 +356,17 @@ function playRewardFor(hintLevelUsed, afterVideo){
   }
 }
 
+/* ================== 배경 교체 유틸 ================== */
+function applyChangedBackground(){
+  document.body.style.backgroundImage = 'url("ctm381.jpg")';
+}
+
 /* ================== 각 문제 처리 ================== */
 function handleClearQ1(){
+  // [추가] 너구리 정답 시 배경 즉시 교체 + 기록
+  applyChangedBackground();
+  localStorage.setItem(BG_CHANGED_KEY, "1");
+
   const used = hintLevel1; // Q1에서 사용한 힌트 단계
   awardOnceAndPlay(1, used, ()=>{
     // Q1 보상 끝난 뒤 라쿤 모달 열기
@@ -376,7 +386,13 @@ function handleClearQ2(){
     location.href = nextUrl;
   });
 }
-  /* === [추가] 페이지 로드 후 1초 뒤, 미션 영상 표시(배경 어둡지 않음) === */
+
+/* === [추가] 페이지 진입 시, 이전에 바꾼 적 있으면 바로 적용 === */
+if (localStorage.getItem(BG_CHANGED_KEY) === "1"){
+  applyChangedBackground();
+}
+
+/* === [추가] 페이지 로드 후 1초 뒤, 미션 영상 표시(배경 어둡지 않음) === */
 /* 포인트: 1초가 지나기 전까지는 overlay도, video도 display:none → 까만 박스 없음 */
 document.addEventListener('DOMContentLoaded', () => {
   setTimeout(() => {
@@ -416,6 +432,7 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
+
 
 
 
