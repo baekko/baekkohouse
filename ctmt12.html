@@ -6,7 +6,7 @@
   <title>관장님의 비밀업무</title>
   <style>
     body{
-      background-image:url("ctmt12.jpg");
+      background-image:url("ctm12.jpg");
       background-size:cover;background-position:center;background-attachment:fixed;
       font-family:Arial,sans-serif;margin:0;
     }
@@ -80,6 +80,24 @@
       box-shadow:0 10px 24px rgba(0,0,0,.35);
     }
     video{width:100%;height:auto;display:block}
+/* ★ 미션 오버레이: 배경 투명, 영상만 중앙 표시 */
+#missionOverlay{
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:1500;
+  background:transparent;      /* ✅ 배경 어둡지 않게 */
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+#missionOverlay .video-box{
+  width:min(70vw,420px);
+  background:#000;             /* 영상 주변 박스 */
+  border-radius:12px;
+  overflow:hidden;
+  box-shadow:0 6px 16px rgba(0,0,0,.35); /* 살짝 그림자만 */
+}
 
     /* 모바일 최적화 */
     @media (max-width:768px){
@@ -118,6 +136,12 @@
       <p id="modalText"></p>
     </div>
   </div>
+<!-- ★ 미션(인트로) 영상 오버레이 -->
+<div id="missionOverlay" aria-hidden="true">
+  <div class="video-box">
+    <video id="missionVideo" playsinline muted></video>
+  </div>
+</div>
 
   <!-- 보상 영상 -->
   <div id="videoOverlay" class="video-overlay" aria-hidden="true">
@@ -242,7 +266,41 @@ function playRewardAndGo(){
     p.catch(()=>{ $video.setAttribute("controls","controls"); });
   }
 }
+/* ===== ★ 페이지 로드 후 1초 뒤, 미션 영상 표시 & 종료 시 자동 숨김 ===== */
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    const $missionOverlay = document.getElementById('missionOverlay');
+    const $missionVideo   = document.getElementById('missionVideo');
+
+    $missionVideo.src = "mission.mp4";  // ✅ 미션 영상 파일명
+    $missionVideo.muted = true;         // 모바일 자동재생용 무음
+    $missionVideo.defaultMuted = true;
+    $missionVideo.volume = 0;
+    $missionVideo.currentTime = 0;
+
+    $missionOverlay.style.display = "flex";
+    $missionOverlay.setAttribute("aria-hidden","false");
+
+    // 끝나면 자동 닫힘
+    $missionVideo.onended = () => {
+      $missionOverlay.style.display = "none";
+      $missionOverlay.setAttribute("aria-hidden","true");
+      $missionVideo.removeAttribute("src");
+      $missionVideo.load();
+    };
+
+    // 자동재생 시도, 실패 시 controls 보이게
+    const playPromise = $missionVideo.play();
+    if (playPromise && typeof playPromise.catch === "function"){
+      playPromise.catch(() => {
+        $missionVideo.setAttribute("controls","controls");
+      });
+    }
+  }, 1000); // 1초 지연
+});
+
 </script>
 </body>
 </html>
+
 
