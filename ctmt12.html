@@ -6,7 +6,7 @@
   <title>관장님의 비밀업무</title>
   <style>
     body{
-      background-image:url("ctm12.jpg");
+      background-image:url("ctmt12.jpg");
       background-size:cover;background-position:center;background-attachment:fixed;
       font-family:Arial,sans-serif;margin:0;
     }
@@ -80,23 +80,28 @@
       box-shadow:0 10px 24px rgba(0,0,0,.35);
     }
     video{width:100%;height:auto;display:block}
-/* ★ 미션 오버레이: 배경 투명, 영상만 중앙 표시 */
+    /* === [추가] 미션 오버레이: 배경 투명, 초기 완전 숨김 === */
 #missionOverlay{
-  display:none;
+  display:none;               /* 초기엔 완전 숨김 → 까만 박스 방지 */
   position:fixed;
   inset:0;
   z-index:1500;
-  background:transparent;      /* ✅ 배경 어둡지 않게 */
-  display:flex;
+  background:transparent;     /* 배경 어두워지지 않게 */
   align-items:center;
   justify-content:center;
 }
+
+/* 영상 컨테이너(선택): 영상만 살짝 강조하고 싶을 때 */
 #missionOverlay .video-box{
   width:min(70vw,420px);
-  background:#000;             /* 영상 주변 박스 */
   border-radius:12px;
   overflow:hidden;
-  box-shadow:0 6px 16px rgba(0,0,0,.35); /* 살짝 그림자만 */
+  box-shadow:0 6px 16px rgba(0,0,0,.35);
+}
+
+/* === [중요 추가] video 초기 숨김 → 기본 검은 배경 노출 방지 === */
+#missionVideo{
+  display:none;               /* 1초 대기 중엔 비디오 자체를 숨김 */
 }
 
     /* 모바일 최적화 */
@@ -136,7 +141,7 @@
       <p id="modalText"></p>
     </div>
   </div>
-<!-- ★ 미션(인트로) 영상 오버레이 -->
+  <!-- === [추가] 미션(인트로) 영상 오버레이 === -->
 <div id="missionOverlay" aria-hidden="true">
   <div class="video-box">
     <video id="missionVideo" playsinline muted></video>
@@ -266,41 +271,47 @@ function playRewardAndGo(){
     p.catch(()=>{ $video.setAttribute("controls","controls"); });
   }
 }
-/* ===== ★ 페이지 로드 후 1초 뒤, 미션 영상 표시 & 종료 시 자동 숨김 ===== */
+/* === [추가] 페이지 로드 후 1초 뒤, 미션 영상 표시(배경 어둡지 않음) === */
+/* 포인트: 1초가 지나기 전까지는 overlay도, video도 display:none → 까만 박스 없음 */
 document.addEventListener('DOMContentLoaded', () => {
   setTimeout(() => {
     const $missionOverlay = document.getElementById('missionOverlay');
     const $missionVideo   = document.getElementById('missionVideo');
 
-    $missionVideo.src = "mission.mp4";  // ✅ 미션 영상 파일명
-    $missionVideo.muted = true;         // 모바일 자동재생용 무음
+    // 1초 후에야 src 지정 → video 기본 검정 화면 노출 차단
+    $missionVideo.src = "mission.mp4";
+
+    // 모바일 자동재생 대응
+    $missionVideo.muted = true;
     $missionVideo.defaultMuted = true;
     $missionVideo.volume = 0;
     $missionVideo.currentTime = 0;
 
+    // 이제 화면에 표시
     $missionOverlay.style.display = "flex";
-    $missionOverlay.setAttribute("aria-hidden","false");
+    $missionVideo.style.display   = "block";
 
-    // 끝나면 자동 닫힘
+    // 종료 시 자동 숨김 + 언로드
     $missionVideo.onended = () => {
       $missionOverlay.style.display = "none";
-      $missionOverlay.setAttribute("aria-hidden","true");
+      $missionVideo.style.display   = "none";
       $missionVideo.removeAttribute("src");
       $missionVideo.load();
     };
 
-    // 자동재생 시도, 실패 시 controls 보이게
+    // 자동재생 시도 (실패 시 controls 노출)
     const playPromise = $missionVideo.play();
     if (playPromise && typeof playPromise.catch === "function"){
       playPromise.catch(() => {
         $missionVideo.setAttribute("controls","controls");
       });
     }
-  }, 1000); // 1초 지연
+  }, 1000); // 1초 대기
 });
 
 </script>
 </body>
 </html>
+
 
 
