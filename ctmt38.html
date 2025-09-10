@@ -208,7 +208,7 @@ const PAGE_KEY_Q2 = "settled:" + location.pathname + ":q2";
 
 /* === [추가] 배경 변경 여부 저장 키 === */
 const BG_CHANGED_KEY = "bgChanged:ctm38";
-
+const BG_STORE = sessionStorage;
 if (localStorage.getItem(CHURU_KEY) === null) localStorage.setItem(CHURU_KEY,"0");
 
 /* ================== 힌트/정답 텍스트 ================== */
@@ -365,7 +365,7 @@ function applyChangedBackground(){
 function handleClearQ1(){
   // [추가] 너구리 정답 시 배경 즉시 교체 + 기록
   applyChangedBackground();
-  localStorage.setItem(BG_CHANGED_KEY, "1");
+  BG_STORE.setItem(BG_CHANGED_KEY, "1");
 
   const used = hintLevel1; // Q1에서 사용한 힌트 단계
   awardOnceAndPlay(1, used, ()=>{
@@ -388,7 +388,7 @@ function handleClearQ2(){
 }
 
 /* === [추가] 페이지 진입 시, 이전에 바꾼 적 있으면 바로 적용 === */
-if (localStorage.getItem(BG_CHANGED_KEY) === "1"){
+if (BG_STORE.getItem(BG_CHANGED_KEY) === "1"){
   applyChangedBackground();
 }
 
@@ -432,6 +432,7 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
+
 
 
 
