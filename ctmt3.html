@@ -1,204 +1,276 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>관장님의 비밀업무</title>
-<style>
-  body{
-    background-image:url("ctm3.jpg");
-    background-size:cover;background-position:center;background-attachment:fixed;
-    font-family:Arial,sans-serif;margin:0;
-  }
-  .container{
-    background-color:rgba(0,0,0,.4);
-    padding:10px;border-radius:10px;text-align:center;
-    position:fixed;bottom:50px;left:50%;transform:translateX(-50%);
-    width:60%;max-width:375px;display:flex;flex-direction:column;align-items:center;
-  }
-  .button-row{
-    position:fixed;bottom:15px;left:50%;transform:translateX(-50%);
-    display:flex;gap:10px;
-  }
-  .input-wrap{display:flex;align-items:center;width:100%;justify-content:center;}
-  input{
-    padding:8px;font-size:14px;width:60%;border:none;border-radius:5px;margin-right:10px;
-    caret-color:orange;
-  }
-  button{
-    padding:4px 6px;width:65px;font-size:12px;font-weight:bold;cursor:pointer;
-    color:#fff;background:orange;border:none;border-radius:5px;box-shadow:0 4px 6px rgba(0,0,0,.46);
-  }
-  button:disabled{background:#6d5d5d!important;cursor:not-allowed;opacity:.9}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>관장님의 비밀업무</title>
+  <style>
+    body{
+      background-image:url("ctm3.jpg");
+      background-size:cover;background-position:center;background-attachment:fixed;
+      font-family:Arial,sans-serif;margin:0;
+    }
+    .container{
+      background:rgba(0,0,0,0.4);
+      padding:10px;border-radius:10px;text-align:center;
+      position:fixed;bottom:50px;left:50%;transform:translateX(-50%);
+      width:60%;max-width:375px;display:flex;flex-direction:column;align-items:center;
+    }
+    .button-container{
+      position:fixed;bottom:15px;left:50%;transform:translateX(-50%);
+      display:flex;gap:10px;
+    }
+    .input-container{display:flex;align-items:center;width:100%;justify-content:center;}
+    input{
+      padding:8px;font-size:14px;width:60%;border:none;border-radius:5px;margin-right:10px;
+      caret-color:orange;
+    }
+    button{
+      padding:4px 6px;font-size:12px;font-weight:bold;width:65px;cursor:pointer;
+      color:#fff;background:orange;border:none;border-radius:5px;
+      box-shadow:0 4px 6px rgba(0,0,0,0.466);
+    }
+    button:disabled{background:rgb(109,93,93)!important;cursor:not-allowed;opacity:.8}
 
-  /* 모달 */
-  .modal{
-    display:none;position:fixed;z-index:1000;left:50%;top:50%;transform:translate(-50%,-50%);
-    width:300px;padding:15px;background:#fff;border-radius:10px;box-shadow:0 4px 8px rgba(0,0,0,.2);
-  }
-  .modal-content{text-align:center}
-  .close{float:right;cursor:pointer;font-size:20px;font-weight:bold}
+    /* 모달 */
+    .modal{
+      display:none;position:fixed;z-index:1000;left:50%;top:50%;transform:translate(-50%,-50%);
+      width:300px;padding:15px;background:#fff;border-radius:10px;box-shadow:0 4px 8px rgba(0,0,0,0.2);
+    }
+    .modal-content{text-align:center;}
+    .close{float:right;cursor:pointer;font-size:20px;font-weight:bold;}
 
-  /* 정답 영상 오버레이 */
-  .video-overlay{
-    display:none; /* 초기엔 none, 보여줄 때 JS에서 flex로 변경 */
-    position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:2000;
-    align-items:center;justify-content:center;
-  }
-  .video-box{
-    width:min(70vw,420px);background:#000;border-radius:12px;overflow:hidden;
-    box-shadow:0 10px 24px rgba(0,0,0,.35);
-  }
-  video{width:100%;height:auto;display:block}
-  @media (max-width:768px){
+    /* 정답 보상 영상 오버레이 */
+    .video-overlay{
+      display:none; /* 초기엔 무조건 none 한 번만 선언 */
+      position:fixed;inset:0;background:rgba(0,0,0,.6);
+      z-index:2000;align-items:center;justify-content:center;
+    }
+    .video-box{
+      width:min(70vw,420px);background:#000;border-radius:12px;overflow:hidden;
+      box-shadow:0 10px 24px rgba(0,0,0,.35);
+    }
+    video{width:100%;height:auto;display:block}
+    /* === [추가] 미션 오버레이: 배경 투명, 초기 완전 숨김 === */
+#missionOverlay{
+  display:none;               /* 초기엔 완전 숨김 → 까만 박스 방지 */
+  position:fixed;
+  inset:0;
+  z-index:1500;
+  background:transparent;     /* 배경 어두워지지 않게 */
+  align-items:center;
+  justify-content:center;
+}
+
+/* 영상 컨테이너(선택): 영상만 살짝 강조하고 싶을 때 */
+#missionOverlay .video-box{
+  width:min(70vw,420px);
+  border-radius:12px;
+  overflow:hidden;
+  box-shadow:0 6px 16px rgba(0,0,0,.35);
+}
+
+/* === [중요 추가] video 초기 숨김 → 기본 검은 배경 노출 방지 === */
+#missionVideo{
+  display:none;               /* 1초 대기 중엔 비디오 자체를 숨김 */
+}
+
+    @media (max-width:768px){
       .container{width:80%;padding:10px;}
       input{font-size:12px;width:60%;}
       button{font-size:12px;padding:4px 6px;}
     }
-</style>
+  </style>
 </head>
 <body>
   <div class="container">
-    <div class="input-wrap">
-      <input id="answer" type="text" autocomplete="off" />
+    <div class="input-container">
+      <input type="text" id="answer" autocomplete="off">
       <button id="submitBtn">입력</button>
     </div>
   </div>
 
-  <div class="button-row">
+  <div class="button-container">
     <button id="hint1">힌트 1</button>
     <button id="hint2" disabled>힌트 2</button>
-    <button id="reveal" disabled>정답 보기</button>
+    <button id="answerBtn" disabled>정답 보기</button>
     <button id="totalBtn">츄르 합계</button>
   </div>
 
-  <!-- 안내 모달 -->
-  <div id="modal" class="modal" role="dialog" aria-modal="true">
+  <div id="modal" class="modal">
     <div class="modal-content">
-      <span id="closeModal" class="close">&times;</span>
+      <span class="close" id="closeModal">&times;</span>
       <p id="modalText"></p>
     </div>
   </div>
+  <!-- === [추가] 미션(인트로) 영상 오버레이 === -->
+<div id="missionOverlay" aria-hidden="true">
+  <div class="video-box">
+    <video id="missionVideo" playsinline muted></video>
+  </div>
+</div>
 
   <!-- 보상 영상 -->
   <div id="videoOverlay" class="video-overlay" aria-hidden="true">
     <div class="video-box">
-      <video id="rewardVideo" playsinline></video>
+      <!-- 음소거 + 인라인 재생 -->
+      <video id="rewardVideo" playsinline muted></video>
     </div>
   </div>
 
-<script>
-/* ===== 페이지별 설정 ===== */
-const correctAnswer = "0351";
-const nextUrl = "https://baekko.github.io/baekkohouse/ctm4.html";
+  <script>
+    /***** 페이지별 설정 *****/
+    const correctAnswer = "0351";
+    const nextUrl = "https://baekko.github.io/baekkohouse/ctm4.html";
 
-/* ===== 상태 ===== */
-// 힌트 단계: 0(없음)->1(힌트1)->2(힌트2)->3(정답보기)
-let hintLevel = 0;
+    /***** 상태 *****/
+    // 힌트 단계: 0(없음)->1(힌트1)->2(힌트2)->3(정답보기)
+    let hintLevel = 0;
 
-// 합계 키: churuTotal (누적), 페이지 처리 키(중복 가산 방지)
-const PAGE_KEY = "settled:" + location.pathname;
+    // 누적 합계 키 & 페이지 중복가산 방지 키 (탭/새로고침/재접속 모두 방지: localStorage 사용)
+    const CHURU_KEY = "churuTotal";
+    const PAGE_KEY  = "settled:" + location.pathname;
 
-// 스토리지 준비
-if (localStorage.getItem("churuTotal") === null) localStorage.setItem("churuTotal","0");
+    if (localStorage.getItem(CHURU_KEY) === null) localStorage.setItem(CHURU_KEY, "0");
 
-/* ===== 엘리먼트 ===== */
-const $answer   = document.getElementById('answer');
-const $submit   = document.getElementById('submitBtn');
-const $hint1    = document.getElementById('hint1');
-const $hint2    = document.getElementById('hint2');
-const $reveal   = document.getElementById('reveal');
-const $totalBtn = document.getElementById('totalBtn');
+    /***** 요소 *****/
+    const $answer = document.getElementById('answer');
+    const $submit = document.getElementById('submitBtn');
+    const $hint1  = document.getElementById('hint1');
+    const $hint2  = document.getElementById('hint2');
+    const $ansBtn = document.getElementById('answerBtn');
+    const $total  = document.getElementById('totalBtn');
 
-const $modal     = document.getElementById('modal');
-const $modalText = document.getElementById('modalText');
-const $close     = document.getElementById('closeModal');
+    const $modal     = document.getElementById('modal');
+    const $modalText = document.getElementById('modalText');
+    const $close     = document.getElementById('closeModal');
 
-const $overlay = document.getElementById('videoOverlay');
-const $video   = document.getElementById('rewardVideo');
+    const $overlay = document.getElementById('videoOverlay');
+    const $video   = document.getElementById('rewardVideo');
 
-/* ===== 공통 UI ===== */
-function openModal(msg){ $modalText.innerText = msg; $modal.style.display = "block"; }
-function closeModal(){ $modal.style.display = "none"; }
-$close.onclick = closeModal;
-window.addEventListener('click', (e)=>{ if(e.target === $modal) closeModal(); });
+    /***** 모달 *****/
+    function openModal(msg){ $modalText.innerText = msg; $modal.style.display = "block"; }
+    function closeModal(){ $modal.style.display = "none"; }
+    $close.onclick = closeModal;
+    window.addEventListener('click', e => { if (e.target === $modal) closeModal(); });
 
-/* ===== 힌트 진행 ===== */
-$hint1.onclick = () => {
-  openModal("입구에 도서관 이용안내를 찾아 봐.");
-  if (hintLevel < 1) hintLevel = 1;
-  $hint2.disabled = false;
-};
-$hint2.onclick = () => {
-  openModal("해미도서관 전화번호: 041-688-XXXX.");
-  if (hintLevel < 2) hintLevel = 2;
-  $reveal.disabled = false;
-};
-$reveal.onclick = () => {
-  openModal("0351");
-  if (hintLevel < 3) hintLevel = 3;
-};
+    /***** 힌트 로직 *****/
+    $hint1.onclick = () => {
+      openModal("입구에 도서관 이용안내를 찾아 봐.");
+      if (hintLevel < 1) hintLevel = 1;
+      $hint2.disabled = false;
+    };
 
-$totalBtn.onclick = () => {
-  const total = Number(localStorage.getItem("churuTotal")||"0");
-  openModal(`현재까지 획득한 츄르: ${total}개`);
-};
+    $hint2.onclick = () => {
+      openModal("해미도서관 전화번호: 041-688-XXXX.");
+      if (hintLevel < 2) hintLevel = 2;
+      $ansBtn.disabled = false;
+    };
 
-/* ===== 정답 처리 ===== */
-function handleCorrectOnce(){
-  // 이미 처리했다면 재가산 없이 바로 영상→이동만
-  if (localStorage.getItem(PAGE_KEY) === "1") {
-    playRewardAndGo();
-    return;
-  }
-  const addMap = [3,2,1,0];
-  const add = addMap[hintLevel] ?? 0;
-  const current = Number(localStorage.getItem("churuTotal")||"0");
-  localStorage.setItem("churuTotal", String(current + add));
-  localStorage.setItem(PAGE_KEY, "1"); // ✅ localStorage로 통일
-  playRewardAndGo();
-}
+    $ansBtn.onclick = () => {
+      openModal("0351");
+      if (hintLevel < 3) hintLevel = 3;
+    };
 
-function playRewardAndGo(){
-  const src = ["curu1.mp4","curu2.mp4","curu3.mp4","curu4.mp4"][hintLevel] || "curu4.mp4";
-  $video.src = src;
+    $total.onclick = () => {
+      const total = Number(localStorage.getItem(CHURU_KEY) || "0");
+      openModal(`현재까지 획득한 츄르: ${total}개`);
+    };
 
-  // 🔇 자동재생 안정화(모바일)
-  $video.muted = true;
-  $video.defaultMuted = true;
-  $video.volume = 0;
+    /***** 정답 처리 *****/
+    function checkAnswer(){
+      const v = ($answer.value || "").trim();
+      if (v === correctAnswer) {
+        closeModal();
+        handleCorrectOnce();
+      } else {
+        openModal("직원이 해미도서관 전화번호도 몰라?");
+      }
+    }
 
-  $video.currentTime = 0;
-  $overlay.style.display = "flex";
-  $overlay.setAttribute("aria-hidden","false");
+    function handleCorrectOnce(){
+      // 이미 이 페이지에서 처리했다면 가산 없이 영상만 재생 후 이동
+      if (localStorage.getItem(PAGE_KEY) === "1") {
+        playRewardAndGo();
+        return;
+      }
+      // 가산
+      const addMap = [3,2,1,0]; // hintLevel 0~3
+      const add = addMap[hintLevel] ?? 0;
+      const cur = Number(localStorage.getItem(CHURU_KEY) || "0");
+      localStorage.setItem(CHURU_KEY, String(cur + add));
+      localStorage.setItem(PAGE_KEY, "1"); // ✅ 중복가산 방지 플래그
 
-  // 입력/버튼 잠금
-  [$submit,$hint1,$hint2,$reveal,$totalBtn].forEach(b=>b.disabled = true);
+      playRewardAndGo();
+    }
 
-  // 종료되면 다음 페이지
-  $video.onended = ()=>{ location.href = nextUrl; };
+    function playRewardAndGo(){
+      const src = ["curu1.mp4","curu2.mp4","curu3.mp4","curu4.mp4"][hintLevel] || "curu4.mp4";
+      $video.src = src;
 
-  // 자동재생 보조
-  const p = $video.play();
-  if (p && typeof p.catch === 'function') {
-    p.catch(()=>{ $video.setAttribute('controls','controls'); });
-  }
-}
+      // 🔇 음소거 보장 (모바일 자동재생 호환)
+      $video.muted = true;
+      $video.defaultMuted = true;
+      $video.volume = 0;
 
-/* ===== 제출 ===== */
-function checkAnswer(){
-  const val = ($answer.value||"").trim();
-  if (val === correctAnswer) {
-    closeModal();
-    handleCorrectOnce();
-  } else {
-    openModal("실망인데.. 해미도서관 전화번호도 몰라?");
-  }
-}
+      $video.currentTime = 0;
+      $overlay.style.display = "flex";
+      $overlay.setAttribute("aria-hidden","false");
 
-$submit.onclick = checkAnswer;
-$answer.addEventListener('keydown', e => { if (e.key === 'Enter') checkAnswer(); });
-</script>
+      // 입력/버튼 잠금
+      [$submit,$hint1,$hint2,$ansBtn,$total].forEach(b=>b.disabled = true);
+
+      // 재생 종료 → 다음 페이지
+      $video.onended = () => { location.href = nextUrl; };
+
+      // 자동재생 시도, 실패시 controls 노출
+      const p = $video.play();
+      if (p && typeof p.catch === 'function') {
+        p.catch(() => { $video.setAttribute('controls','controls'); });
+      }
+    }
+
+    $submit.onclick = checkAnswer;
+    $answer.addEventListener('keydown', e => { if (e.key === 'Enter') checkAnswer(); });
+    /* === [추가] 페이지 로드 후 1초 뒤, 미션 영상 표시(배경 어둡지 않음) === */
+/* 포인트: 1초가 지나기 전까지는 overlay도, video도 display:none → 까만 박스 없음 */
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    const $missionOverlay = document.getElementById('missionOverlay');
+    const $missionVideo   = document.getElementById('missionVideo');
+
+    // 1초 후에야 src 지정 → video 기본 검정 화면 노출 차단
+    $missionVideo.src = "mission.mp4";
+
+    // 모바일 자동재생 대응
+    $missionVideo.muted = true;
+    $missionVideo.defaultMuted = true;
+    $missionVideo.volume = 0;
+    $missionVideo.currentTime = 0;
+
+    // 이제 화면에 표시
+    $missionOverlay.style.display = "flex";
+    $missionVideo.style.display   = "block";
+
+    // 종료 시 자동 숨김 + 언로드
+    $missionVideo.onended = () => {
+      $missionOverlay.style.display = "none";
+      $missionVideo.style.display   = "none";
+      $missionVideo.removeAttribute("src");
+      $missionVideo.load();
+    };
+
+    // 자동재생 시도 (실패 시 controls 노출)
+    const playPromise = $missionVideo.play();
+    if (playPromise && typeof playPromise.catch === "function"){
+      playPromise.catch(() => {
+        $missionVideo.setAttribute("controls","controls");
+      });
+    }
+  }, 1000); // 1초 대기
+});
+
+  </script>
 </body>
 </html>
 
