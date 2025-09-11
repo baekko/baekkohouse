@@ -277,8 +277,8 @@ let images = [
 let currentIndex = 0;
 let shakeCount = 0;
 let lastUpdate = Date.now();
-const threshold = 40;       // 가속도 임계치
-const requiredShakes = 5;   // 프레임 전환에 필요한 흔들림 횟수
+const threshold = 30;       // 가속도 임계치
+const requiredShakes = 4;   // 프레임 전환에 필요한 흔들림 횟수
 
 function nextImage(){
   if (currentIndex < images.length - 1){
@@ -348,5 +348,6 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
+
 
 
